@@ -7,6 +7,16 @@ Scene::Scene()
 	height = 600.0f;
 }
 
+void Scene::SetSceneSize(float w, float h)
+{
+	width = w; 
+	height = h; 
+
+	for (auto iter = cameras.begin(); iter != cameras.end(); iter++) {
+		(*iter)->SetCameraRatio(w/h);
+	}
+}
+
 void Scene::AddBox(glm::vec3 initPos,const Material& material)
 {
 	Box b = Box();

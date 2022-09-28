@@ -16,14 +16,14 @@ private:
     std::map<int, Texture*> textureMap;
     std::map<Material, std::vector<Box>> boxMap;
     std::vector<Box> boxes;
-    Camera * mainCamera;
+    Camera * mainCamera = nullptr;
     std::vector<Camera *> cameras;
     float width;
     float height;
 public:
 Scene();
 
-void SetSceneSize(float w, float h){width = w; height = h;}
+void SetSceneSize(float w, float h);
 
 const std::map<int, Texture*> GetTextureMap(){return textureMap;};
 const std::vector<Material*> GetAllMaterials() { return materials; };

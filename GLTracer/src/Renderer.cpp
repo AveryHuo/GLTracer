@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 
-Renderer::Renderer(GLFWwindow* window, Scene* scene) : vao(0), vbo(0), mainWindow(window), scene(scene), materialValue1(0.2f)
+Renderer::Renderer(GLFWwindow* window, Scene* scene) : vao(0), vbo(0), mainWindow(window), scene(scene), materialValue1(0.2f), enableMainCameraControl(false)
 {
 	if (window == nullptr)
 	{
@@ -14,6 +14,7 @@ Renderer::Renderer(GLFWwindow* window, Scene* scene) : vao(0), vbo(0), mainWindo
 		printf("No Scene Found\n");
 		return;
 	}
+	glfwSetWindowUserPointer(window, this);
 	InitGPUDataBuffers();
 	Ready();
 }
@@ -39,6 +40,12 @@ void Renderer::InitGPUDataBuffers() {
 }
 
 void Renderer::Ready() {
+	glfwSetFramebufferSizeCallback(mainWindow, [](GLFWwindow* window, int x, int y)
+		{
+			Renderer* engine = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
+			engine->WindowSizeChange(window, x, y);
+		});
+
 	auto mats = scene->GetAllMaterials();
 	auto textures = scene->GetTextureMap();
 	if (mats.size() == 0) {
@@ -61,6 +68,125 @@ void Renderer::Ready() {
 	}
 }
 
+
+void Renderer::Update()
+{
+	float currentFrame = static_cast<float>(glfwGetTime());
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+
+	if (enableMainCameraControl) {
+		HandleCameraControl();
+	}
+}
+
+void Renderer::SetEnableMainCameraControl(bool enable) {
+	enableMainCameraControl = enable;	
+	if (enable) {
+		//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetCursorPosCallback(mainWindow, [](GLFWwindow* window, double x, double y)
+			{
+				Renderer* engine = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
+				engine->WindowMouseInputCallBack(window, x, y);
+			});
+		glfwSetScrollCallback(mainWindow, [](GLFWwindow* window, double xoffset, double yoffset)
+			{
+				Renderer* engine = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
+				engine->WindowMouseScrollInputCallBack(window, xoffset, yoffset);
+			});
+	}
+};
+
+void Renderer::HandleCameraControl() {
+	if (glfwGetKey(mainWindow, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		float mixValue = materialValue1;
+		mixValue += 0.001f; // change this value accordingly (might be too slow or too fast based on system hardware)
+		if (mixValue >= 1.0f)
+			mixValue = 1.0f;
+		materialValue1 = mixValue;
+	}
+	if (glfwGetKey(mainWindow, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		float mixValue = materialValue1;
+		mixValue -= 0.001f; // change this value accordingly (might be too slow or too fast based on system hardware)
+		if (mixValue <= 0.0f)
+			mixValue = 0.0f;
+		materialValue1 = mixValue;
+	}
+
+	if (scene == nullptr)
+		return;
+	if (glfwGetKey(mainWindow, GLFW_KEY_W) == GLFW_PRESS)
+		scene->GetMainCamera()->MoveCameraForward(deltaTime);
+	if (glfwGetKey(mainWindow, GLFW_KEY_S) == GLFW_PRESS)
+		scene->GetMainCamera()->MoveCameraBack(deltaTime);
+	if (glfwGetKey(mainWindow, GLFW_KEY_A) == GLFW_PRESS)
+		scene->GetMainCamera()->MoveCameraLeft(deltaTime);
+	if (glfwGetKey(mainWindow, GLFW_KEY_D) == GLFW_PRESS)
+		scene->GetMainCamera()->MoveCameraRight(deltaTime);
+}
+
+
+void Renderer::WindowSizeChange(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+	if (scene == nullptr)
+		return;
+	scene->SetSceneSize(width, height);
+}
+
+
+void Renderer::WindowMouseInputCallBack(GLFWwindow* window, double xpos, double ypos)
+{
+	if (scene == nullptr)
+		return;
+
+	if(!enableMainCameraControl)
+		return;
+
+	if (inputFirstMouse)
+	{
+		inputLastX = (float)xpos;
+		inputLastY = (float)ypos;
+		inputFirstMouse = false;
+	}
+	float xoffset = (float)xpos - inputLastX;
+	float yoffset = inputLastY - (float)ypos;
+	inputLastX = (float)xpos;
+	inputLastY = (float)ypos;
+	float sensitivity = 0.1f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+	inputYaw += xoffset;
+	inputPitch += yoffset;
+	if (inputPitch > 89.0f)
+		inputPitch = 89.0f;
+	if (inputPitch < -89.0f)
+		inputPitch = -89.0f;
+	glm::vec3 direction;
+	direction.x = cos(glm::radians(inputYaw)) * cos(glm::radians(inputPitch));
+	direction.y = sin(glm::radians(inputPitch));
+	direction.z = sin(glm::radians(inputYaw)) * cos(glm::radians(inputPitch));
+	scene->GetMainCamera()->SetCameraFront(glm::normalize(direction));
+}
+
+void Renderer::WindowMouseScrollInputCallBack(GLFWwindow* window, double xoffset, double yoffset)
+{
+	if (scene == nullptr)
+		return;
+
+	if (!enableMainCameraControl)
+		return;
+
+	float zoom = scene->GetMainCamera()->GetCameraFov();
+	zoom -= (float)yoffset;
+	if (zoom < 1.0f)
+		zoom = 1.0f;
+	if (zoom > 45.0f)
+		zoom = 45.0f;
+	scene->GetMainCamera()->SetCameraFov(zoom);
+}
 
 void Renderer::Draw()
 {

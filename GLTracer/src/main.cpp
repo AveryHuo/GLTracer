@@ -18,125 +18,20 @@
 #include "Scene.h"
 #include "Renderer.h"
 
-
-std::string shaderDir = "./src/shaders/";
-std::string resDir = "./res/";
-
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
-float deltaTime = 0.0f; // Time between current frame and last frame
-float lastFrame = 0.0f; // Time of last frame
-
-bool firstMouse = true;
-float lastX, lastY, xpos, ypos, pitch= 1.0f;
-float yaw = -90.0f;
+std::string resDir = "./res/";
 
 Renderer* render;
 
-void processInput(GLFWwindow* window) {
+
+void MainLoop(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
-	if(render == nullptr)
-		return;
 
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-	{
-		float mixValue = render->materialValue1;
-		mixValue += 0.001f; // change this value accordingly (might be too slow or too fast based on system hardware)
-		if (mixValue >= 1.0f)
-			mixValue = 1.0f;
-		render->materialValue1 = mixValue;
-	}
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-	{
-		float mixValue = render->materialValue1;
-		mixValue -= 0.001f; // change this value accordingly (might be too slow or too fast based on system hardware)
-		if (mixValue <= 0.0f)
-			mixValue = 0.0f;
-		render->materialValue1 = mixValue;
-	}
-
-	auto scene = render->GetScene();
-	if (scene == nullptr)
-		return;
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		scene->GetMainCamera()->MoveCameraForward(deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		scene->GetMainCamera()->MoveCameraBack(deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		scene->GetMainCamera()->MoveCameraLeft(deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		scene->GetMainCamera()->MoveCameraRight(deltaTime);
-}
-
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
-{
-	if (render == nullptr)
-		return;
-	auto scene = render->GetScene();
-	if(scene == nullptr)
-		return;
-
-	if (firstMouse)
-	{
-		lastX = (float)xpos;
-		lastY = (float)ypos;
-		firstMouse = false;
-	}
-	float xoffset = (float)xpos - lastX;
-	float yoffset = lastY - (float)ypos;
-	lastX = (float)xpos;
-	lastY = (float)ypos;
-	float sensitivity = 0.1f;
-	xoffset *= sensitivity;
-	yoffset *= sensitivity;
-	yaw += xoffset;
-	pitch += yoffset;
-	if (pitch > 89.0f)
-		pitch = 89.0f;
-	if (pitch < -89.0f)
-		pitch = -89.0f;
-	glm::vec3 direction;
-	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	direction.y = sin(glm::radians(pitch));
-	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	scene->GetMainCamera()->SetCameraFront(glm::normalize(direction));
-}
-
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-	if (render == nullptr)
-		return;
-	auto scene = render->GetScene();
-	if (scene == nullptr)
-		return;
-
-
-	float zoom = scene->GetMainCamera()->GetCameraFov();
-	zoom -= (float)yoffset;
-	if (zoom < 1.0f)
-		zoom = 1.0f;
-	if (zoom > 45.0f)
-		zoom = 45.0f;
-	scene->GetMainCamera()->SetCameraFov(zoom);
-}
-
-void framebufferSizeCallback(GLFWwindow* window, int width, int height)
-{
-	glViewport(0, 0, width, height);
-}
-
-void MainLoop(GLFWwindow* window) {
-	float currentFrame = static_cast<float>(glfwGetTime());
-	deltaTime = currentFrame - lastFrame;
-	lastFrame = currentFrame;
-
-	//´¦ÀíÊäÈë
-	processInput(window);
-
+	render->Update();
 	render->Draw();
 }
 
@@ -157,16 +52,12 @@ int main() {
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-
+	
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetScrollCallback(window, scroll_callback);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -189,6 +80,7 @@ int main() {
 	scene->AddCamera(2.5f, true);
 
 	render = new Renderer(window, scene);
+	render->SetEnableMainCameraControl(true);
 
 	while (!glfwWindowShouldClose(window)) {
 		MainLoop(window);
