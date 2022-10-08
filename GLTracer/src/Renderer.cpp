@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 
-Renderer::Renderer(GLFWwindow* window, Scene* scene) : vao(0), vbo(0), mainWindow(window), scene(scene), materialValue1(0.2f), enableMainCameraControl(false)
+Renderer::Renderer(GLFWwindow* window, Scene* scene) : mainWindow(window), scene(scene), materialValue1(0.2f), enableMainCameraControl(false)
 {
 	if (window == nullptr)
 	{
@@ -21,19 +21,30 @@ Renderer::Renderer(GLFWwindow* window, Scene* scene) : vao(0), vbo(0), mainWindo
 
 
 void Renderer::InitGPUDataBuffers() {
-	glGenVertexArrays(1, &vao);
-	glGenBuffers(1, &vbo);
+	glGenVertexArrays(1, &boxVao);
+	glGenBuffers(1, &boxVbo);
 
-	//bind vao
-	glBindVertexArray(vao);
+	//box
+	glBindVertexArray(boxVao);
 	//Insert all vertex data to vbo
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, boxVbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(BOX_VERTEXS), BOX_VERTEXS, GL_STATIC_DRAW);
 	//Config vertex attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+
+	//light
+	glGenVertexArrays(1, &lightVao);
+	glGenBuffers(1, &lightVbo);
+	glBindVertexArray(lightVao);
+	//Insert all vertex data to vbo
+	glBindBuffer(GL_ARRAY_BUFFER, lightVbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(LIGHT_PHYSICS_VERTEXS), LIGHT_PHYSICS_VERTEXS, GL_STATIC_DRAW);
+	//Config vertex attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
 
 	float borderColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
@@ -183,8 +194,8 @@ void Renderer::WindowMouseScrollInputCallBack(GLFWwindow* window, double xoffset
 	zoom -= (float)yoffset;
 	if (zoom < 1.0f)
 		zoom = 1.0f;
-	if (zoom > 45.0f)
-		zoom = 45.0f;
+	if (zoom > 90.0f)
+		zoom = 90.0f;
 	scene->GetMainCamera()->SetCameraFov(zoom);
 }
 
@@ -210,37 +221,47 @@ void Renderer::Draw()
 		texture->AddToPipeline(textChannel);
 	}
 
+	glm::mat4 view = glm::mat4(1.0f);
+	view = glm::translate(view, glm::vec3(0, 0, -3));
+	// Fixed Y, move camera X and Z
+	view = mainCamera->GetViewMatrix();
+	glm::mat4 proj = mainCamera->GetProjectMatrix();
+
 	auto boxMaps = scene->GetBoxMap();
 	for (auto& [mat, boxes] : boxMaps) {
 		mat.Use();
 		mat.SetFloat("mixValue", materialValue1);
-
-		glm::mat4 view = glm::mat4(1.0f);
-		view = glm::translate(view, glm::vec3(0, 0, -3));
-
-		// Fixed Y, move camera X and Z
-		view = mainCamera->GetViewMatrix();
-
-		glm::mat4 proj = mainCamera->GetProjectMatrix();
-
 		mat.SetMatrix4("view", 1, GL_FALSE, view);
 		mat.SetMatrix4("projection", 1, GL_FALSE, proj);
 
 		int i = 0;
-		glBindVertexArray(vao);
-		for (auto box : boxes) {
+		glBindVertexArray(boxVao);
+		for (auto &box : boxes) {
 			// calculate the model matrix for each object and pass it to shader before drawing
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, box.GetPos());
 			float angle = 20.0f * i;
 			if (i % 3 == 0)  // every 3rd iteration (including the first) we set the angle using GLFW's time function.
 				angle = (float)glfwGetTime() * 25.0f;
-			model = glm::rotate(model, glm::radians(angle), glm::vec3(0, 0, 0.5f));
-			mat.SetMatrix4("model", 1, GL_FALSE, model);
+			box.ChangeRot(angle, glm::vec3(0, 0, 0.5f));
+			mat.SetMatrix4("model", 1, GL_FALSE, box.GetTransform());
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 
 			i++;
+		}
+		mat.StopUsing();
+	}
+
+	auto lightMap = scene->GetLightMap();
+	for (auto& [mat, lights] : lightMap) {
+		mat.Use();
+
+		mat.SetMatrix4("view", 1, GL_FALSE, view);
+		mat.SetMatrix4("projection", 1, GL_FALSE, proj);
+
+		glBindVertexArray(lightVao);
+		for (auto& light : lights) {
+			mat.SetMatrix4("model", 1, GL_FALSE, light.GetTransform());
+			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 		mat.StopUsing();
 	}
@@ -252,7 +273,9 @@ void Renderer::Draw()
 
 Renderer::~Renderer()
 {
-	glDeleteVertexArrays(1, &vao);
-	glDeleteBuffers(1, &vbo);
+	glDeleteVertexArrays(1, &boxVao);
+	glDeleteBuffers(1, &boxVbo);
+	glDeleteVertexArrays(1, &lightVao);
+	glDeleteBuffers(1, &lightVbo);
 	delete scene;
 }

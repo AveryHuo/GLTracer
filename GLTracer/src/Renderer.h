@@ -11,8 +11,10 @@
 class Renderer
 {
 protected:
-	GLuint vbo;
-	GLuint vao;
+	GLuint boxVbo;
+	GLuint boxVao;
+	GLuint lightVbo;
+	GLuint lightVao;
 	GLFWwindow* mainWindow;
 	Scene* scene;
 

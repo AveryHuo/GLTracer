@@ -4,6 +4,7 @@
 #include <map>
 #include <glad/glad.h>
 #include "Texture.h"
+#include "Light.h"
 #include "Box.h"
 #include "Material.h"
 #include "Camera.h"
@@ -15,7 +16,9 @@ private:
     std::vector<Material*> materials;
     std::map<int, Texture*> textureMap;
     std::map<Material, std::vector<Box>> boxMap;
+    std::map<Material, std::vector<Light>> lightMap;
     std::vector<Box> boxes;
+    std::vector<Light> lights;
     Camera * mainCamera = nullptr;
     std::vector<Camera *> cameras;
     float width;
@@ -28,10 +31,12 @@ void SetSceneSize(float w, float h);
 const std::map<int, Texture*> GetTextureMap(){return textureMap;};
 const std::vector<Material*> GetAllMaterials() { return materials; };
 const std::map<Material, std::vector<Box>> GetBoxMap() { return boxMap; };
+const std::map<Material, std::vector<Light>> GetLightMap() { return lightMap; };
 const std::vector<Box> GetBoxs() { return boxes; };
 const std::vector<Camera *> GetCameras() { return cameras; };
 Camera* GetMainCamera() const {return mainCamera;};
 
+void AddLight(glm::vec3 initPos, const Material& material);
 void AddBox(glm::vec3 initPos, const Material &material);
 Texture* AddTexture(const int channel, const std::string path, const GLint colorRange);
 Texture* AddTexture(const int channel, const std::string path, const GLint colorRange, GLint wrapS, GLint wrapT, GLint minFilter, GLint magFilter);

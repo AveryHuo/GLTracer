@@ -64,17 +64,18 @@ int main() {
 	Scene* scene = new Scene();
 	scene->SetSceneSize(SCR_WIDTH, SCR_HEIGHT);
 	auto mat1 = scene->AddMaterial("vec", "frag");
-	auto mat2 = scene->AddMaterial("vec", "frag1");
+	auto lightMat = scene->AddMaterial("vec", "light_frag");
+	scene->AddLight(glm::vec3(2.0f, 2.0f, -5.0f), *lightMat);
 	scene->AddBox(glm::vec3(0.0f, 0.0f, 0.0f), *mat1);
-	scene->AddBox(glm::vec3(2.0f, 5.0f, -15.0f), *mat1);
+	/*scene->AddBox(glm::vec3(2.0f, 5.0f, -15.0f), *mat1);
 	scene->AddBox(glm::vec3(-1.5f, -2.2f, -2.5f), *mat1);
 	scene->AddBox(glm::vec3(-3.8f, -2.0f, -12.3f), *mat1);
 	scene->AddBox(glm::vec3(2.4f, -0.4f, -3.5f), *mat1);
 	scene->AddBox(glm::vec3(-1.7f, 3.0f, -7.5f), *mat1);
 	scene->AddBox(glm::vec3(1.3f, -2.0f, -2.5f), *mat1);
-	scene->AddBox(glm::vec3(1.5f, 2.0f, -2.5f), *mat2);
-	scene->AddBox(glm::vec3(1.5f, 0.2f, -1.5f), *mat2);
-	scene->AddBox(glm::vec3(-1.3f, 1.0f, -1.5f), *mat1);
+	scene->AddBox(glm::vec3(1.5f, 2.0f, -2.5f), *mat1);
+	scene->AddBox(glm::vec3(1.5f, 0.2f, -1.5f), *mat1);
+	scene->AddBox(glm::vec3(-1.3f, 1.0f, -1.5f), *mat1);*/
 	scene->AddTexture(GL_TEXTURE0, resDir + std::string("d.jpeg"), GL_RGB);
 	scene->AddTexture(GL_TEXTURE1, resDir + std::string("over.png"), GL_RGBA);
 	scene->AddCamera(2.5f, true);

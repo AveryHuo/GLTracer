@@ -17,6 +17,22 @@ void Scene::SetSceneSize(float w, float h)
 	}
 }
 
+void Scene::AddLight(glm::vec3 initPos, const Material& material)
+{
+	Light l = Light();
+	l.ChangePos(initPos);
+	lights.push_back(l);
+
+	auto lights = lightMap.find(material);
+	if (lights != lightMap.end()) {
+		lights->second.push_back(l);
+	}
+	else {
+		std::vector<Light> nlightList{ l };
+		lightMap.insert({ material, nlightList });
+	}
+}
+
 void Scene::AddBox(glm::vec3 initPos,const Material& material)
 {
 	Box b = Box();
