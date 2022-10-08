@@ -99,3 +99,13 @@ void Material::SetMatrix4(const std::string key, int count, GLboolean transport,
 {
     glUniformMatrix4fv(glGetUniformLocation(object, key.c_str()), 1, GL_FALSE, glm::value_ptr(val));
 }
+
+void Material::SetVector3(const std::string key, glm::vec3 val) const
+{
+    glUniform3f(glGetUniformLocation(object, key.c_str()), val.r, val.g, val.b);
+}
+
+void Material::SetVector3(const std::string key,  GLfloat val0, GLfloat val1, GLfloat val2) const
+{
+    glUniform3f(glGetUniformLocation(object, key.c_str()), val0, val1, val2);
+}

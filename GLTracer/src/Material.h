@@ -30,5 +30,7 @@ public:
     void SetFloat(const std::string key, float val)  const;
     void SetInt(const std::string key, int val)  const;
     void SetMatrix4(const std::string key,int count, GLboolean transport, glm::mat4 val)  const;
+    void SetVector3(const std::string key, glm::vec3 val) const;
+    void SetVector3(const std::string key, GLfloat val0, GLfloat val1, GLfloat val2) const;
 };
 

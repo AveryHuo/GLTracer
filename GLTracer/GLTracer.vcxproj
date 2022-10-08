@@ -161,8 +161,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\frag.glsl" />
+    <None Include="src\shaders\frag_2.glsl" />
+    <None Include="src\shaders\frag_3_viewspace.glsl" />
+    <None Include="src\shaders\frag_struct.glsl" />
     <None Include="src\shaders\light_frag.glsl" />
+    <None Include="src\shaders\light_vec.glsl" />
     <None Include="src\shaders\vec.glsl" />
+    <None Include="src\shaders\vec_2.glsl" />
+    <None Include="src\shaders\vec_3_viewspace.glsl" />
+    <None Include="src\shaders\vec_struct.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

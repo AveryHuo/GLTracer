@@ -30,10 +30,12 @@ void Renderer::InitGPUDataBuffers() {
 	glBindBuffer(GL_ARRAY_BUFFER, boxVbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(BOX_VERTEXS), BOX_VERTEXS, GL_STATIC_DRAW);
 	//Config vertex attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 	//light
 	glGenVertexArrays(1, &lightVao);
@@ -227,9 +229,50 @@ void Renderer::Draw()
 	view = mainCamera->GetViewMatrix();
 	glm::mat4 proj = mainCamera->GetProjectMatrix();
 
+	glm::vec3 lightPos = glm::vec3(1); 
+	glm::vec3 lightColor = glm::vec3(1);
+	glm::vec3 ambientColor = glm::vec3(1);
+	auto lightMap = scene->GetLightMap();
+	for (auto& [mat, lights] : lightMap) {
+		mat.Use();
+
+		mat.SetMatrix4("view", 1, GL_FALSE, view);
+		mat.SetMatrix4("projection", 1, GL_FALSE, proj);
+		
+		glBindVertexArray(lightVao);
+		for (auto& light : lights) {
+			lightPos = light.GetPos();
+			lightPos.x = cos(glfwGetTime());
+			lightPos.z = sin(glfwGetTime());
+			light.ChangePos(lightPos);
+			light.ChangeScale(glm::vec3(0.2f));
+			lightColor.x = static_cast<float>(sin(glfwGetTime() * 2.0));
+			lightColor.y = static_cast<float>(sin(glfwGetTime() * 0.7));
+			lightColor.z = static_cast<float>(sin(glfwGetTime() * 1.3));
+			lightColor = lightColor * glm::vec3(0.5);
+			ambientColor = lightColor * glm::vec3(0.2);
+			mat.SetVector3("lightColor", lightColor);
+			mat.SetMatrix4("model", 1, GL_FALSE, light.GetTransform());
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+		mat.StopUsing();
+	}
+
 	auto boxMaps = scene->GetBoxMap();
 	for (auto& [mat, boxes] : boxMaps) {
 		mat.Use();
+		mat.SetVector3("light.ambient", ambientColor);
+		mat.SetVector3("light.diffuse", lightColor);
+		mat.SetVector3("light.specular", 1.0f,1.0f,1.0f);
+		mat.SetVector3("light.position", lightPos);
+
+		mat.SetVector3("material.ambient", 0.0f, 0.1f, 0.06f);
+		mat.SetVector3("material.diffuse", 0.0f, 0.50980392f, 0.50980392f);
+		mat.SetVector3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
+		mat.SetFloat("material.shininess", 132.0f);
+
+		mat.SetVector3("viewPos", mainCamera->GetCameraPos());
+
 		mat.SetFloat("mixValue", materialValue1);
 		mat.SetMatrix4("view", 1, GL_FALSE, view);
 		mat.SetMatrix4("projection", 1, GL_FALSE, proj);
@@ -241,7 +284,8 @@ void Renderer::Draw()
 			float angle = 20.0f * i;
 			if (i % 3 == 0)  // every 3rd iteration (including the first) we set the angle using GLFW's time function.
 				angle = (float)glfwGetTime() * 25.0f;
-			box.ChangeRot(angle, glm::vec3(0, 0, 0.5f));
+			box.ChangeScale(glm::vec3(2));
+			box.ChangeRot(angle, glm::vec3(0, 1, 0));
 			mat.SetMatrix4("model", 1, GL_FALSE, box.GetTransform());
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -251,20 +295,7 @@ void Renderer::Draw()
 		mat.StopUsing();
 	}
 
-	auto lightMap = scene->GetLightMap();
-	for (auto& [mat, lights] : lightMap) {
-		mat.Use();
-
-		mat.SetMatrix4("view", 1, GL_FALSE, view);
-		mat.SetMatrix4("projection", 1, GL_FALSE, proj);
-
-		glBindVertexArray(lightVao);
-		for (auto& light : lights) {
-			mat.SetMatrix4("model", 1, GL_FALSE, light.GetTransform());
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
-		mat.StopUsing();
-	}
+	
 
 	//swap buffer ∫Õ¥¶¿Ìevent
 	glfwPollEvents();

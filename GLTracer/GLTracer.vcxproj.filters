@@ -91,5 +91,26 @@
     <None Include="src\shaders\light_frag.glsl">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="src\shaders\light_vec.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\shaders\vec_2.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\shaders\frag_2.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\shaders\frag_3_viewspace.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\shaders\vec_3_viewspace.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\shaders\frag_struct.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\shaders\vec_struct.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
