@@ -6,7 +6,7 @@ Camera::Camera()
 	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	cameraSpeed = 2.5f;
-	fov = 50.0f;
+	fov = 45.0f;
 	ratio = 800.0f / 600.0f;
 }
 
