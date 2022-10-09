@@ -1,5 +1,6 @@
 #pragma once
 #include "Scene.h"
+#include "Sphere.h"
 #include <map>
 
 #include <GLFW/glfw3.h>
@@ -15,8 +16,12 @@ protected:
 	GLuint boxVao;
 	GLuint lightVbo;
 	GLuint lightVao;
+	GLuint sphereVbo;
+	GLuint sphereVao;
+	GLuint sphereEbo;
 	GLFWwindow* mainWindow;
 	Scene* scene;
+	Sphere* sphere;
 
 	bool inputFirstMouse = true;
 	float inputLastX, inputLastY, inputXPos, inputYPos, inputPitch = 1.0f;

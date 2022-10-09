@@ -21,10 +21,58 @@ Renderer::Renderer(GLFWwindow* window, Scene* scene) : mainWindow(window), scene
 
 
 void Renderer::InitGPUDataBuffers() {
-	glGenVertexArrays(1, &boxVao);
-	glGenBuffers(1, &boxVbo);
+	
+	/*
+	//CPU, not recommanded
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+
+	glVertexPointer(3, GL_FLOAT, 0, &vertices[0]);
+	glNormalPointer(GL_FLOAT, 0, &normals[0]);
+
+	glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 3);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	
+	
+	
+	// GPU
+
+		glBindVertexArray(vaoHandle);
+	glBindBuffer(GL_ARRAY_BUFFER, bufferHandle[0]);
+
+
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, bufferHandle[1]);
+	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), normals.data(), GL_STATIC_DRAW);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);*/
+
+	////light
+	//glGenVertexArrays(1, &lightVao);
+	//glGenBuffers(1, &lightVbo);
+	//glBindVertexArray(lightVao);
+	////Insert all vertex data to vbo
+	//glBindBuffer(GL_ARRAY_BUFFER, lightVbo);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(LIGHT_PHYSICS_VERTEXS), LIGHT_PHYSICS_VERTEXS, GL_STATIC_DRAW);
+	////Config vertex attribute
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	//glEnableVertexAttribArray(0);
+
+	//float borderColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+	//glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+
 
 	//box
+	glGenVertexArrays(1, &boxVao);
+	glGenBuffers(1, &boxVbo);
 	glBindVertexArray(boxVao);
 	//Insert all vertex data to vbo
 	glBindBuffer(GL_ARRAY_BUFFER, boxVbo);
@@ -36,20 +84,27 @@ void Renderer::InitGPUDataBuffers() {
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
+	glBindVertexArray(0);
 
-	//light
-	glGenVertexArrays(1, &lightVao);
-	glGenBuffers(1, &lightVbo);
-	glBindVertexArray(lightVao);
-	//Insert all vertex data to vbo
-	glBindBuffer(GL_ARRAY_BUFFER, lightVbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(LIGHT_PHYSICS_VERTEXS), LIGHT_PHYSICS_VERTEXS, GL_STATIC_DRAW);
-	//Config vertex attribute
+	//sphere
+	sphere = new Sphere();
+	glGenVertexArrays(1, &sphereVao);
+	glGenBuffers(1, &sphereVbo);
+	glGenBuffers(1, &sphereEbo);
+	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+	glBindVertexArray(sphereVao);
+
+	glBindBuffer(GL_ARRAY_BUFFER, sphereVbo);
+	glBufferData(GL_ARRAY_BUFFER, sphere->getVertexCount(), sphere->getVertices(), GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	float borderColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEbo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphere->getIndexCount(), sphere->getIndices(), GL_STATIC_DRAW);
+	
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	
+
 }
 
 void Renderer::Ready() {
@@ -229,17 +284,21 @@ void Renderer::Draw()
 	view = mainCamera->GetViewMatrix();
 	glm::mat4 proj = mainCamera->GetProjectMatrix();
 
+	
 	glm::vec3 lightPos = glm::vec3(1); 
 	glm::vec3 lightColor = glm::vec3(1);
 	glm::vec3 ambientColor = glm::vec3(1);
 	auto lightMap = scene->GetLightMap();
+	/*glBindVertexArray(lightVao);
+	glBindVertexArray(boxVao);*/
+	glBindVertexArray(boxVao);
 	for (auto& [mat, lights] : lightMap) {
 		mat.Use();
 
 		mat.SetMatrix4("view", 1, GL_FALSE, view);
 		mat.SetMatrix4("projection", 1, GL_FALSE, proj);
 		
-		glBindVertexArray(lightVao);
+		
 		for (auto& light : lights) {
 			lightPos = light.GetPos();
 			lightPos.x = cos(glfwGetTime());
@@ -253,7 +312,7 @@ void Renderer::Draw()
 			ambientColor = lightColor * glm::vec3(0.2);
 			mat.SetVector3("lightColor", lightColor);
 			mat.SetMatrix4("model", 1, GL_FALSE, light.GetTransform());
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			light.Draw();
 		}
 		mat.StopUsing();
 	}
@@ -278,7 +337,7 @@ void Renderer::Draw()
 		mat.SetMatrix4("projection", 1, GL_FALSE, proj);
 
 		int i = 0;
-		glBindVertexArray(boxVao);
+		
 		for (auto &box : boxes) {
 			// calculate the model matrix for each object and pass it to shader before drawing
 			float angle = 20.0f * i;
@@ -287,8 +346,8 @@ void Renderer::Draw()
 			box.ChangeScale(glm::vec3(2));
 			box.ChangeRot(angle, glm::vec3(0, 1, 0));
 			mat.SetMatrix4("model", 1, GL_FALSE, box.GetTransform());
-
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			box.Draw();
+			
 
 			i++;
 		}

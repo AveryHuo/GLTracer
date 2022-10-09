@@ -2,10 +2,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
 class BaseModel
 {
 protected:
+    GLint vao;
+    GLint vbo;
     glm::vec3 scale;
     glm::vec3 pos;
     glm::vec3 rotBase;
@@ -34,4 +35,5 @@ public:
         return modelMat;
     }
     virtual int GetVertexCount() const = 0;
+    virtual void Draw() const = 0;
 };

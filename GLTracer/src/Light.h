@@ -53,4 +53,7 @@ public:
     int GetVertexCount() const override{
         return 36;
     }
+    void Draw() const override {
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
 };
