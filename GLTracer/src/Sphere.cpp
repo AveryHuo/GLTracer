@@ -92,6 +92,38 @@ void Sphere::printSelf() const
 }
 
 
+void Sphere::init() 
+{
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vertVbo);
+    glGenBuffers(1, &sphereEbo);
+
+    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+    glBindVertexArray(vao);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vertVbo);
+    glBufferData(GL_ARRAY_BUFFER, getInterleavedVertexSize(), getInterleavedVertices(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEbo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, getIndexSize(), getIndices(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+void Sphere::unInit()
+{
+    glDeleteVertexArrays(1, &vao);
+    glDeleteBuffers(1, &vertVbo);
+    glDeleteBuffers(1, &sphereEbo);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // draw a sphere in VertexArray mode
@@ -99,6 +131,9 @@ void Sphere::printSelf() const
 ///////////////////////////////////////////////////////////////////////////////
 void Sphere::draw() const
 {
+    glBindVertexArray(vao);
+    glDrawElements(GL_TRIANGLES, getIndexCount(), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
     //// interleaved array
     //glEnableClientState(GL_VERTEX_ARRAY);
     //glEnableClientState(GL_NORMAL_ARRAY);

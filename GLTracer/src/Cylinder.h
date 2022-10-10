@@ -1,10 +1,12 @@
+#pragma once
 #include <vector>
+#include "BaseModel.h"
 
-class Cylinder
+class Cylinder: public BaseModel
 {
 public:
     // ctor/dtor
-    Cylinder(float baseRadius=1.0f, float topRadius=1.0f, float height=1.0f,
+    Cylinder(float baseRadius=0.5f, float topRadius=1.0f, float height=1.5f,
              int sectorCount=36, int stackCount=1, bool smooth=true);
     ~Cylinder() {}
 
@@ -56,7 +58,9 @@ public:
     unsigned int getSideStartIndex() const  { return 0; }   // side starts from the begining
 
     // draw in VertexArray mode
-    void draw() const;          // draw all
+    void init() override;
+    void unInit() override;
+    void draw() const override;          // draw all
     void drawBase() const;      // draw base cap only
     void drawTop() const;       // draw top cap only
     void drawSide() const;      // draw side only
@@ -67,7 +71,7 @@ public:
     void printSelf() const;
 
 protected:
-
+    GLuint vbo, ebo;
 private:
     // member functions
     void clearArrays();

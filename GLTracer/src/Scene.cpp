@@ -17,36 +17,36 @@ void Scene::SetSceneSize(float w, float h)
 	}
 }
 
-void Scene::AddLight(glm::vec3 initPos, const Material& material)
+void Scene::AddLight(glm::vec3 initPos, Material* material)
 {
 	Light l = Light();
 	l.ChangePos(initPos);
+	l.SetMaterial(material);
 	lights.push_back(l);
-
-	auto lights = lightMap.find(material);
-	if (lights != lightMap.end()) {
-		lights->second.push_back(l);
-	}
-	else {
-		std::vector<Light> nlightList{ l };
-		lightMap.insert({ material, nlightList });
-	}
 }
 
-void Scene::AddBox(glm::vec3 initPos,const Material& material)
+void Scene::AddBox(glm::vec3 initPos, Material* material)
 {
 	Box b = Box();
 	b.ChangePos(initPos);
+	b.SetMaterial(material);
 	boxes.push_back(b);
+}
 
-	auto boxes = boxMap.find(material);
-	if (boxes != boxMap.end()) {
-		boxes->second.push_back(b);
-	}
-	else {
-		std::vector<Box> nboxList{b};
-		boxMap.insert({material, nboxList });
-	}
+void Scene::AddSphere(glm::vec3 initPos, Material* material)
+{
+	Sphere s = Sphere();
+	s.ChangePos(initPos);
+	s.SetMaterial(material);
+	spheres.push_back(s);
+}
+
+void Scene::AddCylinder(glm::vec3 initPos, Material* material)
+{
+	Cylinder c = Cylinder();
+	c.ChangePos(initPos);
+	c.SetMaterial(material);
+	cylinders.push_back(c);
 }
 
 Texture *Scene::AddTexture(const int channel, const std::string path, const GLint colorRange)
@@ -86,6 +86,71 @@ Camera* Scene::AddCamera(const float speed, bool isMainCamera)
 	return cam;
 }
 
+void Scene::Load()
+{
+	for (auto& light : lights) {
+		light.init();
+	}
+
+	for (auto& box : boxes) {
+		box.init();
+	}
+
+	for (auto& sphere : spheres) {
+		sphere.init();
+	}
+
+	for (auto& cylinder : cylinders) {
+		cylinder.init();
+	}
+
+	AttachTextureToMaterial();
+}
+
+void Scene::Unload()
+{
+	for (auto& light : lights) {
+		light.unInit();
+	}
+
+	for (auto& box : boxes) {
+		box.unInit();
+	}
+
+	for (auto& sphere : spheres) {
+		sphere.unInit();
+	}
+
+	for (auto& cylinder : cylinders) {
+		cylinder.unInit();
+	}
+}
+
+void Scene::AttachTextureToMaterial() {
+
+	auto mats = GetAllMaterials();
+	auto textures = GetTextureMap();
+	if (mats.size() == 0) {
+		return;
+	}
+	if (textures.size() == 0) {
+		return;
+	}
+
+	for (Material* mat : mats) {
+		mat->Use();
+		for (const auto& [textChannel, texture] : textures) {
+			if (textChannel == GL_TEXTURE0) {
+				mat->SetTextureSampler("texture1", 0);
+			}
+			else if (textChannel == GL_TEXTURE1) {
+				mat->SetTextureSampler("texture2", 1);
+			}
+		}
+	}
+}
+
+
 Scene::~Scene()
 {
 	for (auto iter = materials.begin(); iter != materials.end(); iter++) {
@@ -99,10 +164,8 @@ Scene::~Scene()
 	}
 	textureMap.clear();
 
-	for (auto iter = boxMap.begin(); iter != boxMap.end(); iter++) {
-		(*iter).second.clear();
-	}
-	boxMap.clear();
+	lights.clear();
+	spheres.clear();
 	boxes.clear();
 	mainCamera = nullptr;
 

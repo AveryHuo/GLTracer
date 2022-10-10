@@ -12,13 +12,6 @@
 class Renderer
 {
 protected:
-	GLuint boxVbo;
-	GLuint boxVao;
-	GLuint lightVbo;
-	GLuint lightVao;
-	GLuint sphereVbo;
-	GLuint sphereVao;
-	GLuint sphereEbo;
 	GLFWwindow* mainWindow;
 	Scene* scene;
 	Sphere* sphere;
@@ -34,7 +27,7 @@ public:
 	float materialValue1;
 	~Renderer();
 	Renderer(GLFWwindow* window, Scene* scene);
-	void InitGPUDataBuffers();
+	void LoadScene();
 	void Ready();
 	void Update();
 	void Draw();

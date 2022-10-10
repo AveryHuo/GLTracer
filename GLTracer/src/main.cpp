@@ -68,8 +68,10 @@ int main() {
 	auto mat3 = scene->AddMaterial("vec_3_viewspace", "frag_3_viewspace");
 	auto mat4 = scene->AddMaterial("vec_struct", "frag_struct");
 	auto lightMat = scene->AddMaterial("light_vec", "light_frag");
-	scene->AddLight(glm::vec3(0.0f, 0.6f, 0.0f), *lightMat);
-	scene->AddBox(glm::vec3(0.0f, -1.8f, -2.0f), *mat4);
+	scene->AddLight(glm::vec3(0.0f, 0.6f, 0.0f), lightMat);
+	scene->AddBox(glm::vec3(2.0f, -1.8f, -2.0f), mat4);
+	scene->AddSphere(glm::vec3(-1.0f, -1.8f, -2.0f), mat4);
+	scene->AddCylinder(glm::vec3(-2.0f, -1.8f, -2.0f), mat4);
 	//scene->AddBox(glm::vec3(0.0f, 0.0f, 0.0f), *mat1);
 	//scene->AddBox(glm::vec3(2.0f, 5.0f, -15.0f), *mat1);
 	//scene->AddBox(glm::vec3(-1.5f, -2.2f, -2.5f), *mat1);

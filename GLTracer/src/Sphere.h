@@ -1,10 +1,13 @@
+#pragma once
 #include <vector>
+#include <glad/glad.h>
+#include "BaseModel.h"
 
-class Sphere
+class Sphere: public BaseModel
 {
 public:
     // ctor/dtor
-    Sphere(float radius=1.0f, int sectorCount=36, int stackCount=18, bool smooth=true);
+    Sphere(float radius=0.2f, int sectorCount=72, int stackCount=18, bool smooth=true);
     ~Sphere() {}
 
     // getters/setters
@@ -41,8 +44,11 @@ public:
     int getInterleavedStride() const                { return interleavedStride; }   // should be 32 bytes
     const float* getInterleavedVertices() const     { return interleavedVertices.data(); }
 
+    void init() override;
+    void unInit() override;
+    void readyDraw()const { glBindVertexArray(vao); }
     // draw in VertexArray mode
-    void draw() const;                                  // draw surface
+    void draw() const override;                                  // draw surface
     void drawLines(const float lineColor[4]) const;     // draw lines only
     void drawWithLines(const float lineColor[4]) const; // draw surface and lines
 
@@ -50,7 +56,7 @@ public:
     void printSelf() const;
 
 protected:
-
+    GLuint vertVbo, sphereEbo;
 private:
     // member functions
     void buildVerticesSmooth();
@@ -66,6 +72,7 @@ private:
                                          float x3, float y3, float z3);
 
     // memeber vars
+    GLuint vao;
     float radius;
     int sectorCount;                        // longitude, # of slices
     int stackCount;                         // latitude, # of stacks

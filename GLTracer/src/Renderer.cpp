@@ -15,96 +15,13 @@ Renderer::Renderer(GLFWwindow* window, Scene* scene) : mainWindow(window), scene
 		return;
 	}
 	glfwSetWindowUserPointer(window, this);
-	InitGPUDataBuffers();
+	LoadScene();
 	Ready();
 }
 
 
-void Renderer::InitGPUDataBuffers() {
-	
-	/*
-	//CPU, not recommanded
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-
-	glVertexPointer(3, GL_FLOAT, 0, &vertices[0]);
-	glNormalPointer(GL_FLOAT, 0, &normals[0]);
-
-	glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 3);
-
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	
-	
-	
-	// GPU
-
-		glBindVertexArray(vaoHandle);
-	glBindBuffer(GL_ARRAY_BUFFER, bufferHandle[0]);
-
-
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, bufferHandle[1]);
-	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), normals.data(), GL_STATIC_DRAW);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(1);*/
-
-	////light
-	//glGenVertexArrays(1, &lightVao);
-	//glGenBuffers(1, &lightVbo);
-	//glBindVertexArray(lightVao);
-	////Insert all vertex data to vbo
-	//glBindBuffer(GL_ARRAY_BUFFER, lightVbo);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(LIGHT_PHYSICS_VERTEXS), LIGHT_PHYSICS_VERTEXS, GL_STATIC_DRAW);
-	////Config vertex attribute
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	//glEnableVertexAttribArray(0);
-
-	//float borderColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
-	//glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-
-
-	//box
-	glGenVertexArrays(1, &boxVao);
-	glGenBuffers(1, &boxVbo);
-	glBindVertexArray(boxVao);
-	//Insert all vertex data to vbo
-	glBindBuffer(GL_ARRAY_BUFFER, boxVbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(BOX_VERTEXS), BOX_VERTEXS, GL_STATIC_DRAW);
-	//Config vertex attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-	glBindVertexArray(0);
-
-	//sphere
-	sphere = new Sphere();
-	glGenVertexArrays(1, &sphereVao);
-	glGenBuffers(1, &sphereVbo);
-	glGenBuffers(1, &sphereEbo);
-	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-	glBindVertexArray(sphereVao);
-
-	glBindBuffer(GL_ARRAY_BUFFER, sphereVbo);
-	glBufferData(GL_ARRAY_BUFFER, sphere->getVertexCount(), sphere->getVertices(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEbo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphere->getIndexCount(), sphere->getIndices(), GL_STATIC_DRAW);
-	
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	
-
+void Renderer::LoadScene() {
+	scene->Load();
 }
 
 void Renderer::Ready() {
@@ -113,27 +30,6 @@ void Renderer::Ready() {
 			Renderer* engine = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 			engine->WindowSizeChange(window, x, y);
 		});
-
-	auto mats = scene->GetAllMaterials();
-	auto textures = scene->GetTextureMap();
-	if (mats.size() == 0) {
-		return;
-	}
-	if (textures.size() == 0) {
-		return;
-	}
-
-	for (Material* mat : mats) {
-		mat->Use();
-		for (const auto& [textChannel, texture] : textures) {
-			if (textChannel == GL_TEXTURE0) {
-				mat->SetTextureSampler("texture1", 0);
-			}
-			else if (textChannel == GL_TEXTURE1) {
-				mat->SetTextureSampler("texture2", 1);
-			}
-		}
-	}
 }
 
 
@@ -284,77 +180,110 @@ void Renderer::Draw()
 	view = mainCamera->GetViewMatrix();
 	glm::mat4 proj = mainCamera->GetProjectMatrix();
 
-	
 	glm::vec3 lightPos = glm::vec3(1); 
 	glm::vec3 lightColor = glm::vec3(1);
 	glm::vec3 ambientColor = glm::vec3(1);
-	auto lightMap = scene->GetLightMap();
-	/*glBindVertexArray(lightVao);
-	glBindVertexArray(boxVao);*/
-	glBindVertexArray(boxVao);
-	for (auto& [mat, lights] : lightMap) {
-		mat.Use();
-
-		mat.SetMatrix4("view", 1, GL_FALSE, view);
-		mat.SetMatrix4("projection", 1, GL_FALSE, proj);
-		
-		
-		for (auto& light : lights) {
-			lightPos = light.GetPos();
-			lightPos.x = cos(glfwGetTime());
-			lightPos.z = sin(glfwGetTime());
-			light.ChangePos(lightPos);
-			light.ChangeScale(glm::vec3(0.2f));
-			lightColor.x = static_cast<float>(sin(glfwGetTime() * 2.0));
-			lightColor.y = static_cast<float>(sin(glfwGetTime() * 0.7));
-			lightColor.z = static_cast<float>(sin(glfwGetTime() * 1.3));
-			lightColor = lightColor * glm::vec3(0.5);
-			ambientColor = lightColor * glm::vec3(0.2);
-			mat.SetVector3("lightColor", lightColor);
-			mat.SetMatrix4("model", 1, GL_FALSE, light.GetTransform());
-			light.Draw();
-		}
-		mat.StopUsing();
-	}
-
-	auto boxMaps = scene->GetBoxMap();
-	for (auto& [mat, boxes] : boxMaps) {
-		mat.Use();
-		mat.SetVector3("light.ambient", ambientColor);
-		mat.SetVector3("light.diffuse", lightColor);
-		mat.SetVector3("light.specular", 1.0f,1.0f,1.0f);
-		mat.SetVector3("light.position", lightPos);
-
-		mat.SetVector3("material.ambient", 0.0f, 0.1f, 0.06f);
-		mat.SetVector3("material.diffuse", 0.0f, 0.50980392f, 0.50980392f);
-		mat.SetVector3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
-		mat.SetFloat("material.shininess", 132.0f);
-
-		mat.SetVector3("viewPos", mainCamera->GetCameraPos());
-
-		mat.SetFloat("mixValue", materialValue1);
-		mat.SetMatrix4("view", 1, GL_FALSE, view);
-		mat.SetMatrix4("projection", 1, GL_FALSE, proj);
-
-		int i = 0;
-		
-		for (auto &box : boxes) {
-			// calculate the model matrix for each object and pass it to shader before drawing
-			float angle = 20.0f * i;
-			if (i % 3 == 0)  // every 3rd iteration (including the first) we set the angle using GLFW's time function.
-				angle = (float)glfwGetTime() * 25.0f;
-			box.ChangeScale(glm::vec3(2));
-			box.ChangeRot(angle, glm::vec3(0, 1, 0));
-			mat.SetMatrix4("model", 1, GL_FALSE, box.GetTransform());
-			box.Draw();
-			
-
-			i++;
-		}
-		mat.StopUsing();
-	}
-
 	
+	for (auto& light : scene->GetLights()) {
+		auto mat = light.GetMaterial();
+		mat->Use();
+
+		mat->SetMatrix4("view", 1, GL_FALSE, view);
+		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
+		
+		lightPos = light.GetPos();
+		lightPos.x = cos(glfwGetTime());
+		lightPos.z = sin(glfwGetTime());
+		light.ChangePos(lightPos);
+		light.ChangeScale(glm::vec3(0.2f));
+		lightColor.x = static_cast<float>(sin(glfwGetTime() * 2.0));
+		lightColor.y = static_cast<float>(sin(glfwGetTime() * 0.7));
+		lightColor.z = static_cast<float>(sin(glfwGetTime() * 1.3));
+		lightColor = lightColor * glm::vec3(0.5);
+		ambientColor = lightColor * glm::vec3(0.2);
+		mat->SetVector3("lightColor", lightColor);
+		mat->SetMatrix4("model", 1, GL_FALSE, light.GetTransform());
+		light.draw();
+		mat->StopUsing();
+	}
+	
+	for (auto& box : scene->GetBoxs()) {
+		auto mat = box.GetMaterial();
+		mat->Use();
+		mat->SetVector3("light.ambient", ambientColor);
+		mat->SetVector3("light.diffuse", lightColor);
+		mat->SetVector3("light.specular", 1.0f,1.0f,1.0f);
+		mat->SetVector3("light.position", lightPos);
+
+		mat->SetVector3("material.ambient", 0.0f, 0.1f, 0.06f);
+		mat->SetVector3("material.diffuse", 0.0f, 0.50980392f, 0.50980392f);
+		mat->SetVector3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
+		mat->SetFloat("material.shininess", 132.0f);
+
+		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
+
+		mat->SetFloat("mixValue", materialValue1);
+		mat->SetMatrix4("view", 1, GL_FALSE, view);
+		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
+
+		box.ChangeScale(glm::vec3(1));
+		box.ChangeRot((float)glfwGetTime() * 25.0f, glm::vec3(0, 1, 0));
+		mat->SetMatrix4("model", 1, GL_FALSE, box.GetTransform());
+		box.draw();
+		mat->StopUsing();
+	}
+
+	for (auto& sphere : scene->GetSpheres()) {
+		auto mat = sphere.GetMaterial();
+		mat->Use();
+		mat->SetVector3("light.ambient", ambientColor);
+		mat->SetVector3("light.diffuse", lightColor);
+		mat->SetVector3("light.specular", 1.0f, 1.0f, 1.0f);
+		mat->SetVector3("light.position", lightPos);
+
+		mat->SetVector3("material.ambient", 0.0f, 0.1f, 0.06f);
+		mat->SetVector3("material.diffuse", 0.0f, 0.50980392f, 0.50980392f);
+		mat->SetVector3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
+		mat->SetFloat("material.shininess", 132.0f);
+
+		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
+
+		mat->SetFloat("mixValue", materialValue1);
+		mat->SetMatrix4("view", 1, GL_FALSE, view);
+		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
+
+		sphere.ChangeScale(glm::vec3(1));
+		sphere.ChangeRot((float)glfwGetTime() * 25.0f, glm::vec3(0, 1, 0));
+		mat->SetMatrix4("model", 1, GL_FALSE, sphere.GetTransform());
+		sphere.draw();
+		mat->StopUsing();
+	}
+
+	for (auto& cylinder : scene->GetCylinders()) {
+		auto mat = cylinder.GetMaterial();
+		mat->Use();
+		mat->SetVector3("light.ambient", ambientColor);
+		mat->SetVector3("light.diffuse", lightColor);
+		mat->SetVector3("light.specular", 1.0f, 1.0f, 1.0f);
+		mat->SetVector3("light.position", lightPos);
+
+		mat->SetVector3("material.ambient", 0.0f, 0.1f, 0.06f);
+		mat->SetVector3("material.diffuse", 0.0f, 0.50980392f, 0.50980392f);
+		mat->SetVector3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
+		mat->SetFloat("material.shininess", 132.0f);
+
+		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
+
+		mat->SetFloat("mixValue", materialValue1);
+		mat->SetMatrix4("view", 1, GL_FALSE, view);
+		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
+
+		cylinder.ChangeScale(glm::vec3(1));
+		cylinder.ChangeRot((float)glfwGetTime() * 25.0f, glm::vec3(0, 1, 0));
+		mat->SetMatrix4("model", 1, GL_FALSE, cylinder.GetTransform());
+		cylinder.draw();
+		mat->StopUsing();
+	}
 
 	//swap buffer ºÍ´¦Àíevent
 	glfwPollEvents();
@@ -363,9 +292,6 @@ void Renderer::Draw()
 
 Renderer::~Renderer()
 {
-	glDeleteVertexArrays(1, &boxVao);
-	glDeleteBuffers(1, &boxVbo);
-	glDeleteVertexArrays(1, &lightVao);
-	glDeleteBuffers(1, &lightVbo);
+	scene->Unload();
 	delete scene;
 }

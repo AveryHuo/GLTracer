@@ -50,13 +50,35 @@ const float BOX_VERTEXS[] = {
 
 class Box:public BaseModel
 {
-
+protected:
+    GLuint boxVbo;
 public:
-int GetVertexCount() const override{
-    return 36;
+    void unInit() override {
+        glDeleteVertexArrays(1, &vao);
+        glDeleteBuffers(1, &boxVbo);
+    }
+
+void init() override{
+    
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &boxVbo);
+    glBindVertexArray(vao);
+    //Insert all vertex data to vbo
+    glBindBuffer(GL_ARRAY_BUFFER, boxVbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(BOX_VERTEXS), BOX_VERTEXS, GL_STATIC_DRAW);
+    //Config vertex attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+    glBindVertexArray(0);
 }
-void Draw() const override {
+void draw() const override {
+    glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
 }
 };
 
