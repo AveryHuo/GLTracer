@@ -97,7 +97,7 @@ void Renderer::WindowSizeChange(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 	if (scene == nullptr)
 		return;
-	scene->SetSceneSize(width, height);
+	scene->SetSceneSize((float)width, (float)height);
 }
 
 
@@ -199,8 +199,8 @@ void Renderer::Draw()
 		lightColor.x = static_cast<float>(sin(glfwGetTime() * 2.0));
 		lightColor.y = static_cast<float>(sin(glfwGetTime() * 0.7));
 		lightColor.z = static_cast<float>(sin(glfwGetTime() * 1.3));
-		lightColor = lightColor * glm::vec3(0.5);
-		ambientColor = lightColor * glm::vec3(0.2);
+		lightColor = lightColor * glm::vec3(0.5f);
+		ambientColor = lightColor * glm::vec3(0.2f);
 		mat->SetVector3("lightColor", lightColor);
 		mat->SetMatrix4("model", 1, GL_FALSE, light.GetTransform());
 		light.draw();
@@ -282,6 +282,32 @@ void Renderer::Draw()
 		cylinder.ChangeRot((float)glfwGetTime() * 25.0f, glm::vec3(0, 1, 0));
 		mat->SetMatrix4("model", 1, GL_FALSE, cylinder.GetTransform());
 		cylinder.draw();
+		mat->StopUsing();
+	}
+
+	for (auto& quad : scene->GetQuads()) {
+		auto mat = quad.GetMaterial();
+		mat->Use();
+		mat->SetVector3("light.ambient", ambientColor);
+		mat->SetVector3("light.diffuse", lightColor);
+		mat->SetVector3("light.specular", 1.0f, 1.0f, 1.0f);
+		mat->SetVector3("light.position", lightPos);
+
+		mat->SetVector3("material.ambient", 0.0f, 0.1f, 0.06f);
+		mat->SetVector3("material.diffuse", 0.0f, 0.50980392f, 0.50980392f);
+		mat->SetVector3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
+		mat->SetFloat("material.shininess", 132.0f);
+
+		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
+
+		mat->SetFloat("mixValue", materialValue1);
+		mat->SetMatrix4("view", 1, GL_FALSE, view);
+		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
+
+		quad.ChangeScale(glm::vec3(4));
+		quad.ChangeRot(-80.0f, glm::vec3(1, 0, 0));
+		mat->SetMatrix4("model", 1, GL_FALSE, quad.GetTransform());
+		quad.draw();
 		mat->StopUsing();
 	}
 

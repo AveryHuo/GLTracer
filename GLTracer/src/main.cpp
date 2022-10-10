@@ -72,6 +72,7 @@ int main() {
 	scene->AddBox(glm::vec3(2.0f, -1.8f, -2.0f), mat4);
 	scene->AddSphere(glm::vec3(-1.0f, -1.8f, -2.0f), mat4);
 	scene->AddCylinder(glm::vec3(-2.0f, -1.8f, -2.0f), mat4);
+	scene->AddQuad(glm::vec3(0.0f, -2.5f, -2.0f), mat4);
 	//scene->AddBox(glm::vec3(0.0f, 0.0f, 0.0f), *mat1);
 	//scene->AddBox(glm::vec3(2.0f, 5.0f, -15.0f), *mat1);
 	//scene->AddBox(glm::vec3(-1.5f, -2.2f, -2.5f), *mat1);

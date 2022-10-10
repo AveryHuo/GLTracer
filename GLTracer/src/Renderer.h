@@ -14,10 +14,14 @@ class Renderer
 protected:
 	GLFWwindow* mainWindow;
 	Scene* scene;
-	Sphere* sphere;
+	Sphere* sphere = nullptr;
 
 	bool inputFirstMouse = true;
-	float inputLastX, inputLastY, inputXPos, inputYPos, inputPitch = 1.0f;
+	float inputLastX = 1.0f;
+	float inputLastY = 1.0f; 
+	float inputXPos = 1.0f; 
+	float inputYPos = 1.0f;
+	float inputPitch = 1.0f;
 	float inputYaw = -90.0f;
 	float deltaTime = 0.0f; // Time between current frame and last frame
 	float lastFrame = 0.0f; // Time of last frame

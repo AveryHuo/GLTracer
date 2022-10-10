@@ -49,6 +49,14 @@ void Scene::AddCylinder(glm::vec3 initPos, Material* material)
 	cylinders.push_back(c);
 }
 
+void Scene::AddQuad(glm::vec3 initPos, Material* material)
+{
+	Quad c = Quad();
+	c.ChangePos(initPos);
+	c.SetMaterial(material);
+	quads.push_back(c);
+}
+
 Texture *Scene::AddTexture(const int channel, const std::string path, const GLint colorRange)
 {
 	return AddTexture(channel, path, colorRange, GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR);
@@ -104,6 +112,10 @@ void Scene::Load()
 		cylinder.init();
 	}
 
+	for (auto& quad : quads) {
+		quad.init();
+	}
+
 	AttachTextureToMaterial();
 }
 
@@ -123,6 +135,10 @@ void Scene::Unload()
 
 	for (auto& cylinder : cylinders) {
 		cylinder.unInit();
+	}
+
+	for (auto& quad : quads) {
+		quad.unInit();
 	}
 }
 

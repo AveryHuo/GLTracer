@@ -39,9 +39,6 @@
     <ClCompile Include="..\libs\glad\src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Light.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Sphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -93,6 +90,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Cylinder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Quad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
