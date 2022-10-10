@@ -305,7 +305,7 @@ void Renderer::Draw()
 		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
 
 		quad.ChangeScale(glm::vec3(4));
-		quad.ChangeRot(-80.0f, glm::vec3(1, 0, 0));
+		quad.ChangeRot(-90.0f, glm::vec3(1, 0, 0));
 		mat->SetMatrix4("model", 1, GL_FALSE, quad.GetTransform());
 		quad.draw();
 		mat->StopUsing();
