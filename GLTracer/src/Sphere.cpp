@@ -94,6 +94,8 @@ void Sphere::printSelf() const
 
 void Sphere::init() 
 {
+    if (isInit)
+        return;
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vertVbo);
     glGenBuffers(1, &sphereEbo);
@@ -116,13 +118,17 @@ void Sphere::init()
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+    isInit = true;
 }
 
 void Sphere::unInit()
 {
+    if (!isInit)
+        return;
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vertVbo);
     glDeleteBuffers(1, &sphereEbo);
+    isInit = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -131,6 +137,8 @@ void Sphere::unInit()
 ///////////////////////////////////////////////////////////////////////////////
 void Sphere::draw() const
 {
+    if(!isInit)
+        return;
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, getIndexCount(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);

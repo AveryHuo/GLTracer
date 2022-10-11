@@ -5,6 +5,8 @@ Scene::Scene()
 	//Default value
 	width = 800.0f;
 	height = 600.0f;
+
+	lightMaterial = AddMaterial("light_vec", "light_frag");
 }
 
 void Scene::SetSceneSize(float w, float h)
@@ -17,44 +19,68 @@ void Scene::SetSceneSize(float w, float h)
 	}
 }
 
-void Scene::AddLight(glm::vec3 initPos, Material* material)
+DirectionLight* Scene::AddDirectionLight(glm::vec3 initPos)
 {
-	Light l = Light();
-	l.ChangePos(initPos);
-	l.SetMaterial(material);
-	lights.push_back(l);
+	DirectionLight *l = new DirectionLight();
+	l->ChangePos(initPos);
+	l->SetMaterial(lightMaterial);
+	dirLights.push_back(l);
+	return dirLights[dirLights.size() - 1];;
 }
 
-void Scene::AddBox(glm::vec3 initPos, Material* material)
+
+PointLight* Scene::AddPointLight(glm::vec3 initPos)
 {
-	Box b = Box();
-	b.ChangePos(initPos);
-	b.SetMaterial(material);
+	PointLight *l = new PointLight();
+	l->ChangePos(initPos);
+	l->SetMaterial(lightMaterial);
+	pointLights.push_back(l);
+	return pointLights[pointLights.size() - 1];;
+}
+
+SpotLight* Scene::AddSpotLight(glm::vec3 initPos)
+{
+	SpotLight *l = new SpotLight();
+	l->ChangePos(initPos);
+	l->SetMaterial(lightMaterial);
+	spotLights.push_back(l);
+	return spotLights[spotLights.size() - 1];
+}
+
+Box* Scene::AddBox(glm::vec3 initPos, Material* material)
+{
+	Box *b = new Box();
+	b->ChangePos(initPos);
+	b->SetMaterial(material);
 	boxes.push_back(b);
+	return boxes[boxes.size() - 1];
 }
 
-void Scene::AddSphere(glm::vec3 initPos, Material* material)
+Sphere* Scene::AddSphere(glm::vec3 initPos, Material* material)
 {
-	Sphere s = Sphere();
-	s.ChangePos(initPos);
-	s.SetMaterial(material);
+	Sphere *s = new Sphere();
+	s->ChangePos(initPos);
+	s->SetMaterial(material);
 	spheres.push_back(s);
+	return spheres[spheres.size() - 1];
 }
 
-void Scene::AddCylinder(glm::vec3 initPos, Material* material)
+Cylinder* Scene::AddCylinder(glm::vec3 initPos, Material* material)
 {
-	Cylinder c = Cylinder();
-	c.ChangePos(initPos);
-	c.SetMaterial(material);
+	Cylinder *c = new Cylinder();
+	c->ChangePos(initPos);
+	c->SetMaterial(material);
 	cylinders.push_back(c);
+	return cylinders[cylinders.size()-1];
 }
 
-void Scene::AddQuad(glm::vec3 initPos, Material* material)
+Quad* Scene::AddQuad(glm::vec3 initPos, Material* material)
 {
-	Quad c = Quad();
-	c.ChangePos(initPos);
-	c.SetMaterial(material);
+	Quad *c = new Quad();
+	c->ChangePos(initPos);
+	c->SetMaterial(material);
 	quads.push_back(c);
+	return quads[quads.size()-1];
 }
 
 Texture *Scene::AddTexture(const int channel, const std::string path, const GLint colorRange)
@@ -94,55 +120,70 @@ Camera* Scene::AddCamera(const float speed, bool isMainCamera)
 	return cam;
 }
 
+void Scene::Reload() {
+	this->Unload();
+	this->Load();
+}
+
 void Scene::Load()
 {
-	for (auto& light : lights) {
-		light.init();
+	for (auto& light : dirLights) {
+		light->init();
+	}
+	for (auto& light : pointLights) {
+		light->init();
+	}
+	for (auto& light : spotLights) {
+		light->init();
 	}
 
 	for (auto& box : boxes) {
-		box.init();
+		box->init();
 	}
 
 	for (auto& sphere : spheres) {
-		sphere.init();
+		sphere->init();
 	}
 
 	for (auto& cylinder : cylinders) {
-		cylinder.init();
+		cylinder->init();
 	}
 
 	for (auto& quad : quads) {
-		quad.init();
+		quad->init();
 	}
-
-	AttachTextureToMaterial();
 }
 
 void Scene::Unload()
 {
-	for (auto& light : lights) {
-		light.unInit();
+	for (auto& light : dirLights) {
+		light->unInit();
+	}
+	for (auto& light : pointLights) {
+		light->unInit();
+	}
+	for (auto& light : spotLights) {
+		light->unInit();
 	}
 
 	for (auto& box : boxes) {
-		box.unInit();
+		box->unInit();
 	}
 
 	for (auto& sphere : spheres) {
-		sphere.unInit();
+		sphere->unInit();
 	}
 
 	for (auto& cylinder : cylinders) {
-		cylinder.unInit();
+		cylinder->unInit();
 	}
 
 	for (auto& quad : quads) {
-		quad.unInit();
+		quad->unInit();
 	}
 }
 
-void Scene::AttachTextureToMaterial() {
+void Scene::InitMaterialTextures() {
 
 	auto mats = GetAllMaterials();
 	auto textures = GetTextureMap();
@@ -180,9 +221,38 @@ Scene::~Scene()
 	}
 	textureMap.clear();
 
-	lights.clear();
+	for (auto& light : dirLights) {
+		delete light;
+	}
+	for (auto& light : pointLights) {
+		delete light;
+	}
+	for (auto& light : spotLights) {
+		delete light;
+	}
+
+	for (auto& box : boxes) {
+		delete box;
+	}
+
+	for (auto& sphere : spheres) {
+		delete sphere;
+	}
+
+	for (auto& cylinder : cylinders) {
+		delete cylinder;
+	}
+
+	for (auto& quad : quads) {
+		delete quad;
+	}
+
+	dirLights.clear();
+	pointLights.clear();
+	spotLights.clear();
 	spheres.clear();
 	boxes.clear();
+	quads.clear();
 	mainCamera = nullptr;
 
 	for (auto iter = cameras.begin(); iter != cameras.end(); iter++) {

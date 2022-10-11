@@ -1,7 +1,7 @@
 #include <stdexcept>
 #include "Material.h"
 #include <glm/gtc/type_ptr.hpp>
-
+#include "DataUtils.h"
 
 void Material::CreateInstance()
 {
@@ -108,4 +108,52 @@ void Material::SetVector3(const std::string key, glm::vec3 val) const
 void Material::SetVector3(const std::string key,  GLfloat val0, GLfloat val1, GLfloat val2) const
 {
     glUniform3f(glGetUniformLocation(object, key.c_str()), val0, val1, val2);
+}
+
+void Material::SetDirectionLights(std::vector<DirectionLight *> lights) const{
+    if(lights.size() == 0)
+        return;
+
+    auto dirLight = lights[0];
+    SetVector3("dirLight.ambient", dirLight->GetAmbient());
+    SetVector3("dirLight.diffuse", dirLight->GetDiffuse());
+    SetVector3("dirLight.specular", dirLight->GetSpecular());
+    SetVector3("dirLight.position", dirLight->GetPos());
+}
+
+void Material::SetSpotLights(std::vector<SpotLight*> lights) const{
+    if (lights.size() == 0)
+        return;
+
+    for(int i = 0; i < lights.size(); i++){
+        auto light = lights[i];
+        
+        SetVector3(string_format("spotLights[%d].direction", i), light->GetDirection());
+        SetVector3(string_format("spotLights[%d].position", i), light->GetPos());
+        SetVector3(string_format("spotLights[%d].ambient", i), light->GetAmbient());
+        SetVector3(string_format("spotLights[%d].diffuse", i), light->GetDiffuse());
+        SetVector3(string_format("spotLights[%d].specular", i), light->GetSpecular());
+        SetFloat(string_format("spotLights[%d].constant", i), light->GetConstant());
+        SetFloat(string_format("spotLights[%d].linear", i), light->GetLinear());
+        SetFloat(string_format("spotLights[%d].quadratic", i), light->GetQuadratic());
+        SetFloat(string_format("spotLights[%d].cutOff", i), light->GetCutOff());
+        SetFloat(string_format("spotLights[%d].outerCutOff", i), light->GetOuterCutOff());
+        
+    }
+}
+
+void Material::SetPointLights(std::vector<PointLight*> lights) const{
+    if (lights.size() == 0)
+        return;
+
+    for (int i = 0; i < lights.size(); i++) {
+        auto light = lights[i];
+        SetVector3(string_format("pointLights[%d]->position", i), light->GetPos());
+        SetVector3(string_format("pointLights[%d]->ambient", i), light->GetAmbient());
+        SetVector3(string_format("pointLights[%d]->diffuse", i), light->GetDiffuse());
+        SetVector3(string_format("pointLights[%d]->specular", i), light->GetSpecular());
+        SetFloat(string_format("pointLights[%d].constant", i), light->GetConstant());
+        SetFloat(string_format("pointLights[%d].linear", i), light->GetLinear());
+        SetFloat(string_format("pointLights[%d].quadratic", i), light->GetQuadratic());
+    }
 }

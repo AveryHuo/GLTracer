@@ -23,13 +23,17 @@ protected:
     GLuint vbo, ebo;
 public:
     void unInit() override {
+        if (!isInit)
+            return;
         glDeleteVertexArrays(1, &vao);
         glDeleteBuffers(1, &vbo);
         glDeleteBuffers(1, &ebo);
+        isInit = false;
     }
 
 void init() override{
-    
+    if (isInit)
+        return;
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
     glGenBuffers(1, &ebo);
@@ -48,8 +52,11 @@ void init() override{
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
     glBindVertexArray(0);
+    isInit = true;
 }
 void draw() const override {
+    if (!isInit)
+        return;
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);

@@ -16,6 +16,7 @@ private:
 public:
 	Camera();
 	void SetCameraSpeed(float speed);
+	void SetCameraPos(glm::vec3 val) { cameraPos = val; };
 	void SetCameraFov(float val){fov = val;};
 	void SetCameraRatio(float val) { ratio = val; };
 	void SetCameraFront(glm::vec3 front){cameraFront = front; };

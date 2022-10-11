@@ -17,22 +17,118 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Scene.h"
 #include "Renderer.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
 
+const char* glsl_version = "#version 130";
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 std::string resDir = "./res/";
 
 Renderer* render;
-
+Scene* scene;
+Material * mat4;
+bool show_demo_window = true;
+bool show_another_window = false;
+static int counter = 0;
+ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 void MainLoop(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
 
-	render->Update();
+	render->Update(window);
 	render->Draw();
+
+
+	//swap buffer ºÍ´¦Àíevent
+	glfwPollEvents();
+	// Start the Dear ImGui frame
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	ImGuiIO& io = ImGui::GetIO();
+	// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+	if (show_demo_window)
+		ImGui::ShowDemoWindow(&show_demo_window);
+
+	
+	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+	{
+		static float f = 0.0f;
+		
+
+		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+		ImGui::Checkbox("Another Window", &show_another_window);
+		
+		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+			{
+			counter++;
+			scene->AddBox(glm::vec3(0.0f, 0.8f, -2.0f), mat4);
+			scene->Load();
+			}
+		ImGui::SameLine();
+		ImGui::Text("counter = %d", counter);
+
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::End();
+	}
+
+	// 3. Show another simple window.
+	if (show_another_window)
+	{
+		ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+		ImGui::Text("Hello from another window!");
+		if (ImGui::Button("Close Me"))
+			show_another_window = false;
+		ImGui::End();
+	}
+	// Rendering
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+	glfwSwapBuffers(window);
+}
+
+void InitRender() {
+	scene = new Scene();
+	scene->SetSceneSize(SCR_WIDTH, SCR_HEIGHT);
+	auto mat1 = scene->AddMaterial("vec", "frag");
+	auto mat2 = scene->AddMaterial("vec_2", "frag_2");
+	auto mat3 = scene->AddMaterial("vec_3_viewspace", "frag_3_viewspace");
+	mat4 = scene->AddMaterial("vec_struct", "frag_struct");
+	auto dir = scene->AddDirectionLight(glm::vec3(0.0f, 0.6f, 0.0f));
+	dir->ChangeScale(glm::vec3(0.1));
+	scene->AddBox(glm::vec3(2.0f, -1.8f, -2.0f), mat4);
+	scene->AddSphere(glm::vec3(-1.0f, -1.8f, -2.0f), mat4);
+	scene->AddCylinder(glm::vec3(-2.0f, -1.8f, -2.0f), mat4);
+	scene->AddQuad(glm::vec3(0.0f, -2.5f, -2.0f), mat4);
+	//scene->AddBox(glm::vec3(0.0f, 0.0f, 0.0f), *mat1);
+	//scene->AddBox(glm::vec3(2.0f, 5.0f, -15.0f), *mat1);
+	//scene->AddBox(glm::vec3(-1.5f, -2.2f, -2.5f), *mat1);
+	//scene->AddBox(glm::vec3(-3.8f, -2.0f, -12.3f), *mat1);
+	//scene->AddBox(glm::vec3(2.4f, -0.4f, -3.5f), *mat1);
+	//scene->AddBox(glm::vec3(-1.7f, 3.0f, -7.5f), *mat1);
+	//scene->AddBox(glm::vec3(1.3f, -2.0f, -2.5f), *mat1);
+	//scene->AddBox(glm::vec3(1.5f, 2.0f, -2.5f), *mat1);
+	//scene->AddBox(glm::vec3(1.5f, 0.2f, -1.5f), *mat1);
+	//scene->AddBox(glm::vec3(-1.3f, 1.0f, -1.5f), *mat1);
+	scene->AddTexture(GL_TEXTURE0, resDir + std::string("block.jpg"), GL_RGB);
+	scene->AddTexture(GL_TEXTURE1, resDir + std::string("over.png"), GL_RGBA);
+	scene->AddCamera(2.5f, true);
+
+	render = new Renderer(scene);
+	render->SetEnableMainCameraControl(true);
 }
 
 int main() {
@@ -59,41 +155,64 @@ int main() {
 		return -1;
 	}
 
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+	ImGui::StyleColorsDark();
+	// Setup Platform/Renderer backends
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init(glsl_version);
+
 	glEnable(GL_DEPTH_TEST);
 
-	Scene* scene = new Scene();
-	scene->SetSceneSize(SCR_WIDTH, SCR_HEIGHT);
-	auto mat1 = scene->AddMaterial("vec", "frag");
-	auto mat2 = scene->AddMaterial("vec_2", "frag_2");
-	auto mat3 = scene->AddMaterial("vec_3_viewspace", "frag_3_viewspace");
-	auto mat4 = scene->AddMaterial("vec_struct", "frag_struct");
-	auto lightMat = scene->AddMaterial("light_vec", "light_frag");
-	scene->AddLight(glm::vec3(0.0f, 0.6f, 0.0f), lightMat);
-	scene->AddBox(glm::vec3(2.0f, -1.8f, -2.0f), mat4);
-	scene->AddSphere(glm::vec3(-1.0f, -1.8f, -2.0f), mat4);
-	scene->AddCylinder(glm::vec3(-2.0f, -1.8f, -2.0f), mat4);
-	scene->AddQuad(glm::vec3(0.0f, -2.5f, -2.0f), mat4);
-	//scene->AddBox(glm::vec3(0.0f, 0.0f, 0.0f), *mat1);
-	//scene->AddBox(glm::vec3(2.0f, 5.0f, -15.0f), *mat1);
-	//scene->AddBox(glm::vec3(-1.5f, -2.2f, -2.5f), *mat1);
-	//scene->AddBox(glm::vec3(-3.8f, -2.0f, -12.3f), *mat1);
-	//scene->AddBox(glm::vec3(2.4f, -0.4f, -3.5f), *mat1);
-	//scene->AddBox(glm::vec3(-1.7f, 3.0f, -7.5f), *mat1);
-	//scene->AddBox(glm::vec3(1.3f, -2.0f, -2.5f), *mat1);
-	//scene->AddBox(glm::vec3(1.5f, 2.0f, -2.5f), *mat1);
-	//scene->AddBox(glm::vec3(1.5f, 0.2f, -1.5f), *mat1);
-	//scene->AddBox(glm::vec3(-1.3f, 1.0f, -1.5f), *mat1);
-	scene->AddTexture(GL_TEXTURE0, resDir + std::string("block.jpg"), GL_RGB);
-	scene->AddTexture(GL_TEXTURE1, resDir + std::string("over.png"), GL_RGBA);
-	scene->AddCamera(2.5f, true);
+	InitRender();
 
-	render = new Renderer(window, scene);
-	render->SetEnableMainCameraControl(true);
+	if (render == nullptr) {
+		return 0;
+	}
 
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, [](GLFWwindow* window, double x, double y)
+		{
+			// (1) ALWAYS forward mouse data to ImGui! This is automatic with default backends. With your own backend:
+			ImGuiIO& io = ImGui::GetIO();
+			io.AddMousePosEvent(x, y);
+
+			// (2) ONLY forward mouse data to your underlying app/game.
+			if (!io.WantCaptureMouse) {
+				render->WindowMouseInputCallBack(window, x, y);
+			}
+		});
+	glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset)
+		{
+			ImGuiIO& io = ImGui::GetIO();
+			io.AddMouseWheelEvent(xoffset, yoffset);
+
+			// (2) ONLY forward mouse data to your underlying app/game.
+			if (!io.WantCaptureMouse) {
+				render->WindowMouseScrollInputCallBack(window, xoffset, yoffset);
+			}
+		});
+	glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int x, int y)
+		{
+			render->WindowSizeChange(window, x, y);
+		});
+
+	glfwSetWindowUserPointer(window, render);
 	while (!glfwWindowShouldClose(window)) {
 		MainLoop(window);
 	}
 	delete render;
+	// Cleanup
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
+	glfwDestroyWindow(window);
 	glfwTerminate();
 	return 0;
 }

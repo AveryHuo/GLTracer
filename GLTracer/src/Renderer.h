@@ -12,7 +12,6 @@
 class Renderer
 {
 protected:
-	GLFWwindow* mainWindow;
 	Scene* scene;
 	Sphere* sphere = nullptr;
 
@@ -30,17 +29,20 @@ protected:
 public:
 	float materialValue1;
 	~Renderer();
-	Renderer(GLFWwindow* window, Scene* scene);
+	Renderer(Scene* scene);
 	void LoadScene();
 	void Ready();
-	void Update();
+	void Update(GLFWwindow* window);
 	void Draw();
 	Scene* GetScene() const { return scene; };
 	void SetEnableMainCameraControl(bool enable);
-	void HandleCameraControl();
+	void HandleCameraControl(GLFWwindow* window);
 
 	void WindowSizeChange(GLFWwindow* window, int width, int height);
 	void WindowMouseInputCallBack(GLFWwindow* window, double xpos, double ypos);
 	void WindowMouseScrollInputCallBack(GLFWwindow* window, double xoffset, double yoffset);
+private:
+	void HandleCursorPosCallback(GLFWwindow* window, double x, double y) ;
+	void HandleScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 };
 

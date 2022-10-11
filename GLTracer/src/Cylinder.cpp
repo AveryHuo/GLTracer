@@ -115,6 +115,8 @@ void Cylinder::printSelf() const
 
 void Cylinder::init()
 {
+    if (isInit)
+        return;
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
     glGenBuffers(1, &ebo);
@@ -137,13 +139,17 @@ void Cylinder::init()
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+    isInit = true;
 }
 
 void Cylinder::unInit()
 {
+    if (!isInit)
+        return;
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
     glDeleteBuffers(1, &ebo);
+    isInit = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -152,6 +158,8 @@ void Cylinder::unInit()
 ///////////////////////////////////////////////////////////////////////////////
 void Cylinder::draw() const
 {
+    if(!isInit)
+        return;
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, getIndexCount(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);

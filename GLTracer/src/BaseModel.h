@@ -13,6 +13,7 @@ protected:
     glm::vec3 rotBase;
     float rotAngle;
     Material *bindMaterial;
+    bool isInit = false;
 public:
     BaseModel() {
         this->bindMaterial = nullptr;

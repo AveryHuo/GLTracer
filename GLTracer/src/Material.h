@@ -3,6 +3,9 @@
 #include <vector>
 #include "Shader.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include "DirectionLight.h"
+#include "SpotLight.h"
+#include "PointLight.h"
 
 #define DEFAULT_SHADER_DIR "./src/shaders/"
 
@@ -32,5 +35,9 @@ public:
     void SetMatrix4(const std::string key,int count, GLboolean transport, glm::mat4 val)  const;
     void SetVector3(const std::string key, glm::vec3 val) const;
     void SetVector3(const std::string key, GLfloat val0, GLfloat val1, GLfloat val2) const;
+
+    void SetDirectionLights(std::vector<DirectionLight*> lights) const;
+    void SetSpotLights(std::vector<SpotLight*> lights) const;
+    void SetPointLights(std::vector<PointLight*> lights) const;
 };
 
