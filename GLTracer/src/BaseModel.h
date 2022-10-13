@@ -1,19 +1,22 @@
 #pragma once
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Material.h"
+#include "DataUtils.h"
 
 class BaseModel
 {
 protected:
+    Material *bindMaterial;
     GLuint vao;
     glm::vec3 scale;
     glm::vec3 pos;
     glm::vec3 rotBase;
     float rotAngle;
-    Material *bindMaterial;
-    bool isInit = false;
+    bool isInit;
+   
 public:
     BaseModel() {
         this->bindMaterial = nullptr;
@@ -22,8 +25,9 @@ public:
         this->pos = glm::vec3(0);
         this->rotBase = glm::vec3(0,0,1);
         this->rotAngle = 0;
-    }
-    BaseModel(glm::vec3 pos, float rotAngle, glm::vec3 rotBase):vao(0), scale(glm::vec3(1)), pos(pos), rotAngle(rotAngle), rotBase(rotBase), bindMaterial(nullptr) {}
+        this->isInit = false;
+    };
+    BaseModel(glm::vec3 pos, float rotAngle, glm::vec3 rotBase): isInit(false), vao(0), scale(glm::vec3(1)), pos(pos), rotAngle(rotAngle), rotBase(rotBase), bindMaterial(nullptr) {}
     const glm::vec3 GetPos() const { return pos; };
     const glm::vec3 GetScale() const { return scale; };
     void ChangeScale(glm::vec3 scale) { this->scale = scale; };

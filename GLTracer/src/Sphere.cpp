@@ -251,7 +251,7 @@ void Sphere::clearArrays()
 ///////////////////////////////////////////////////////////////////////////////
 void Sphere::buildVerticesSmooth()
 {
-    const float PI = acos(-1);
+    const float PI = (float)acos(-1);
 
     // clear memory of prev arrays
     clearArrays();
@@ -341,7 +341,7 @@ void Sphere::buildVerticesSmooth()
 ///////////////////////////////////////////////////////////////////////////////
 void Sphere::buildVerticesFlat()
 {
-    const float PI = acos(-1);
+    const float PI = (float)acos(-1);
 
     // tmp vertex definition (x,y,z,s,t)
     struct Vertex

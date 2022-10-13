@@ -1,6 +1,5 @@
 #pragma once
 #include "Scene.h"
-#include "Sphere.h"
 #include <map>
 
 #include <GLFW/glfw3.h>
@@ -13,7 +12,6 @@ class Renderer
 {
 protected:
 	Scene* scene;
-	Sphere* sphere = nullptr;
 
 	bool inputFirstMouse = true;
 	float inputLastX = 1.0f;

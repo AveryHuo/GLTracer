@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include <stdio.h>
 #include "imgui/imgui.h"
+#include "MaterialHelper.h"
 
 
 Renderer::Renderer(Scene* scene) :scene(scene), materialValue1(0.2f), enableMainCameraControl(false)
@@ -184,9 +185,6 @@ void Renderer::Draw()
 	view = mainCamera->GetViewMatrix();
 	glm::mat4 proj = mainCamera->GetProjectMatrix();
 
-	glm::vec3 lightPos = glm::vec3(1); 
-	glm::vec3 lightColor = glm::vec3(1);
-	glm::vec3 ambientColor = glm::vec3(1);
 	
 	for (auto& light : scene->GetDirLights()) {
 		auto mat = light->GetMaterial();
@@ -194,18 +192,26 @@ void Renderer::Draw()
 
 		mat->SetMatrix4("view", 1, GL_FALSE, view);
 		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
-		
-		lightPos = light->GetPos();
-		lightPos.x = cos(glfwGetTime());
-		lightPos.z = sin(glfwGetTime());
-		light->ChangePos(lightPos);
-		//light->ChangeScale(glm::vec3(0.2f));
-		lightColor.x = static_cast<float>(sin(glfwGetTime() * 2.0));
-		lightColor.y = static_cast<float>(sin(glfwGetTime() * 0.7));
-		lightColor.z = static_cast<float>(sin(glfwGetTime() * 1.3));
-		lightColor = lightColor * glm::vec3(0.5f);
-		ambientColor = lightColor * glm::vec3(0.2f);
-		mat->SetVector3("lightColor", lightColor);
+		mat->SetMatrix4("model", 1, GL_FALSE, light->GetTransform());
+		light->draw();
+		mat->StopUsing();
+	}
+	for (auto& light : scene->GetPointLights()) {
+		auto mat = light->GetMaterial();
+		mat->Use();
+
+		mat->SetMatrix4("view", 1, GL_FALSE, view);
+		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
+		mat->SetMatrix4("model", 1, GL_FALSE, light->GetTransform());
+		light->draw();
+		mat->StopUsing();
+	}
+	for (auto& light : scene->GetSpotLights()) {
+		auto mat = light->GetMaterial();
+		mat->Use();
+
+		mat->SetMatrix4("view", 1, GL_FALSE, view);
+		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
 		mat->SetMatrix4("model", 1, GL_FALSE, light->GetTransform());
 		light->draw();
 		mat->StopUsing();
@@ -214,15 +220,12 @@ void Renderer::Draw()
 	for (auto& box : scene->GetBoxs()) {
 		auto mat = box->GetMaterial();
 		mat->Use();
-		mat->SetVector3("light->ambient", ambientColor);
-		mat->SetVector3("light->diffuse", lightColor);
-		mat->SetVector3("light->specular", 1.0f,1.0f,1.0f);
-		mat->SetVector3("light->position", lightPos);
+		MaterialHelper::AddLightsToMaterial(scene, mat);
 
-		mat->SetVector3("material.ambient", 0.0f, 0.1f, 0.06f);
-		mat->SetVector3("material.diffuse", 0.0f, 0.50980392f, 0.50980392f);
+		mat->SetVector3("material.ambient", 0.1f, 0.1f, 0.1f);
+		mat->SetVector3("material.diffuse", 1.0f, 1, 1);
 		mat->SetVector3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
-		mat->SetFloat("material.shininess", 132.0f);
+		mat->SetFloat("material.shininess", 32.0f);
 
 		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
 
@@ -240,15 +243,12 @@ void Renderer::Draw()
 	for (auto& sphere : scene->GetSpheres()) {
 		auto mat = sphere->GetMaterial();
 		mat->Use();
-		mat->SetVector3("light->ambient", ambientColor);
-		mat->SetVector3("light->diffuse", lightColor);
-		mat->SetVector3("light->specular", 1.0f, 1.0f, 1.0f);
-		mat->SetVector3("light->position", lightPos);
+		MaterialHelper::AddLightsToMaterial(scene, mat);
 
-		mat->SetVector3("material.ambient", 0.0f, 0.1f, 0.06f);
-		mat->SetVector3("material.diffuse", 0.0f, 0.50980392f, 0.50980392f);
+		mat->SetVector3("material.ambient", 0.1f, 0.1f, 0.1f);
+		mat->SetVector3("material.diffuse", 1.0f, 1, 1);
 		mat->SetVector3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
-		mat->SetFloat("material.shininess", 132.0f);
+		mat->SetFloat("material.shininess", 32.0f);
 
 		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
 
@@ -266,15 +266,12 @@ void Renderer::Draw()
 	for (auto& cylinder : scene->GetCylinders()) {
 		auto mat = cylinder->GetMaterial();
 		mat->Use();
-		mat->SetVector3("light->ambient", ambientColor);
-		mat->SetVector3("light->diffuse", lightColor);
-		mat->SetVector3("light->specular", 1.0f, 1.0f, 1.0f);
-		mat->SetVector3("light->position", lightPos);
+		MaterialHelper::AddLightsToMaterial(scene, mat);
 
-		mat->SetVector3("material.ambient", 0.0f, 0.1f, 0.06f);
-		mat->SetVector3("material.diffuse", 0.0f, 0.50980392f, 0.50980392f);
+		mat->SetVector3("material.ambient", 0.1f, 0.1f, 0.1f);
+		mat->SetVector3("material.diffuse", 1.0f, 1, 1);
 		mat->SetVector3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
-		mat->SetFloat("material.shininess", 132.0f);
+		mat->SetFloat("material.shininess", 32.0f);
 
 		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
 
@@ -292,15 +289,12 @@ void Renderer::Draw()
 	for (auto& quad : scene->GetQuads()) {
 		auto mat = quad->GetMaterial();
 		mat->Use();
-		mat->SetVector3("light->ambient", ambientColor);
-		mat->SetVector3("light->diffuse", lightColor);
-		mat->SetVector3("light->specular", 1.0f, 1.0f, 1.0f);
-		mat->SetVector3("light->position", lightPos);
+		MaterialHelper::AddLightsToMaterial(scene, mat);
 
-		mat->SetVector3("material.ambient", 0.0f, 0.1f, 0.06f);
-		mat->SetVector3("material.diffuse", 0.0f, 0.50980392f, 0.50980392f);
+		mat->SetVector3("material.ambient", 0.1f, 0.1f, 0.1f);
+		mat->SetVector3("material.diffuse", 1.0f, 1, 1);
 		mat->SetVector3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
-		mat->SetFloat("material.shininess", 132.0f);
+		mat->SetFloat("material.shininess", 32.0f);
 
 		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
 

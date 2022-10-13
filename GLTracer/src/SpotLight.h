@@ -1,3 +1,4 @@
+#pragma once
 #include "BaseModel.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -109,8 +110,25 @@ public:
     void draw() const override {
         if (!isInit)
             return;
+
+        if (bindMaterial != nullptr)
+            bindMaterial->SetVector3("lightColor", diffuse);
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
+    }
+
+
+    void applyToMaterial(Material* mat, int idx) {
+        mat->SetVector3(string_format("spotLights[%d].direction", idx), this->GetDirection());
+        mat->SetVector3(string_format("spotLights[%d].position", idx), this->GetPos());
+        mat->SetVector3(string_format("spotLights[%d].ambient", idx), this->GetAmbient());
+        mat->SetVector3(string_format("spotLights[%d].diffuse", idx), this->GetDiffuse());
+        mat->SetVector3(string_format("spotLights[%d].specular", idx), this->GetSpecular());
+        mat->SetFloat(string_format("spotLights[%d].constant", idx), this->GetConstant());
+        mat->SetFloat(string_format("spotLights[%d].linear", idx), this->GetLinear());
+        mat->SetFloat(string_format("spotLights[%d].quadratic", idx), this->GetQuadratic());
+        mat->SetFloat(string_format("spotLights[%d].cutOff", idx), this->GetCutOff());
+        mat->SetFloat(string_format("spotLights[%d].outerCutOff", idx), this->GetOuterCutOff());
     }
 };

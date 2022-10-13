@@ -1,3 +1,4 @@
+#pragma once
 #include "BaseModel.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -82,6 +83,9 @@ public:
     void init() override {
         if(isInit)
             return;
+
+        if (bindMaterial != nullptr)
+            bindMaterial->SetVector3("lightColor", diffuse);
         glGenVertexArrays(1, &vao);
         glGenBuffers(1, &lightVbo);
         glBindVertexArray(vao);
@@ -100,5 +104,15 @@ public:
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
+    }
+
+    void applyToMaterial(Material* mat, int idx) {
+        mat->SetVector3(string_format("pointLights[%d].position", idx), this->GetPos());
+        mat->SetVector3(string_format("pointLights[%d].ambient", idx), this->GetAmbient());
+        mat->SetVector3(string_format("pointLights[%d].diffuse", idx), this->GetDiffuse());
+        mat->SetVector3(string_format("pointLights[%d].specular", idx), this->GetSpecular());
+        mat->SetFloat(string_format("pointLights[%d].constant", idx), this->GetConstant());
+        mat->SetFloat(string_format("pointLights[%d].linear", idx), this->GetLinear());
+        mat->SetFloat(string_format("pointLights[%d].quadratic", idx), this->GetQuadratic());
     }
 };

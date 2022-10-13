@@ -107,8 +107,27 @@ void InitRender() {
 	auto mat2 = scene->AddMaterial("vec_2", "frag_2");
 	auto mat3 = scene->AddMaterial("vec_3_viewspace", "frag_3_viewspace");
 	mat4 = scene->AddMaterial("vec_struct", "frag_struct");
-	auto dir = scene->AddDirectionLight(glm::vec3(0.0f, 0.6f, 0.0f));
-	dir->ChangeScale(glm::vec3(0.1));
+	auto dir = scene->AddDirectionLight(glm::vec3(2.0f, 0.6f, -2.0f));
+	dir->ChangeScale(glm::vec3(0.1f));
+	dir->SetDiffuse(glm::vec3(1.0f, 0, 0));
+	dir->SetDirection(glm::vec3(2.0f, 0.6f, -2.0f));
+
+	auto point = scene->AddPointLight(glm::vec3(0.0f, 0.6f, -2.0f));
+	point->ChangeScale(glm::vec3(0.1f));
+	point->SetAmbient(glm::vec3(1.0f));
+
+	auto point2 = scene->AddPointLight(glm::vec3(0.0f, 1.0f, -2.0f));
+	point2->ChangeScale(glm::vec3(0.1f));
+	point2->SetAmbient(glm::vec3(10.0f));
+
+	auto spot = scene->AddSpotLight(glm::vec3(-2.0f, 0.6f, -2.0f));
+	spot->ChangeScale(glm::vec3(0.1f));
+	spot->SetDirection(glm::vec3(-2.0f, 0.6f, -2.0f));
+
+	auto spot2 = scene->AddSpotLight(glm::vec3(-2.0f, 0, -2.0f));
+	spot2->ChangeScale(glm::vec3(0.1f));
+	spot2->SetDirection(glm::vec3(-2.0f, 0, -2.0f));
+	
 	scene->AddBox(glm::vec3(2.0f, -1.8f, -2.0f), mat4);
 	scene->AddSphere(glm::vec3(-1.0f, -1.8f, -2.0f), mat4);
 	scene->AddCylinder(glm::vec3(-2.0f, -1.8f, -2.0f), mat4);
@@ -180,7 +199,7 @@ int main() {
 		{
 			// (1) ALWAYS forward mouse data to ImGui! This is automatic with default backends. With your own backend:
 			ImGuiIO& io = ImGui::GetIO();
-			io.AddMousePosEvent(x, y);
+			io.AddMousePosEvent((float)x, (float)y);
 
 			// (2) ONLY forward mouse data to your underlying app/game.
 			if (!io.WantCaptureMouse) {
@@ -190,7 +209,7 @@ int main() {
 	glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset)
 		{
 			ImGuiIO& io = ImGui::GetIO();
-			io.AddMouseWheelEvent(xoffset, yoffset);
+			io.AddMouseWheelEvent((float)xoffset, (float)yoffset);
 
 			// (2) ONLY forward mouse data to your underlying app/game.
 			if (!io.WantCaptureMouse) {

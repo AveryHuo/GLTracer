@@ -1,3 +1,5 @@
+#pragma once
+
 #include "BaseModel.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -92,8 +94,18 @@ public:
     void draw() const override {
         if (!isInit)
             return;
+
+        if(bindMaterial != nullptr)
+            bindMaterial ->SetVector3("lightColor", diffuse);
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
+    }
+
+    void applyToMaterial(Material * mat) {
+        mat->SetVector3("dirLight.ambient", this->GetAmbient());
+        mat->SetVector3("dirLight.diffuse", this->GetDiffuse());
+        mat->SetVector3("dirLight.specular", this->GetSpecular());
+        mat->SetVector3("dirLight.direction", this->GetDirection());
     }
 };
