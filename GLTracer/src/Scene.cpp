@@ -5,8 +5,6 @@ Scene::Scene()
 	//Default value
 	width = 800.0f;
 	height = 600.0f;
-
-	lightMaterial = AddMaterial("light_vec", "light_frag");
 }
 
 void Scene::SetSceneSize(float w, float h)
@@ -23,7 +21,7 @@ DirectionLight* Scene::AddDirectionLight(glm::vec3 initPos)
 {
 	DirectionLight *l = new DirectionLight();
 	l->ChangePos(initPos);
-	l->SetMaterial(lightMaterial);
+	l->SetMaterial(AddMaterial("light_vec", "light_frag"));
 	dirLights.push_back(l);
 	return dirLights[dirLights.size() - 1];;
 }
@@ -33,7 +31,7 @@ PointLight* Scene::AddPointLight(glm::vec3 initPos)
 {
 	PointLight *l = new PointLight();
 	l->ChangePos(initPos);
-	l->SetMaterial(lightMaterial);
+	l->SetMaterial(AddMaterial("light_vec", "light_frag"));
 	pointLights.push_back(l);
 	return pointLights[pointLights.size() - 1];;
 }
@@ -42,7 +40,7 @@ SpotLight* Scene::AddSpotLight(glm::vec3 initPos)
 {
 	SpotLight *l = new SpotLight();
 	l->ChangePos(initPos);
-	l->SetMaterial(lightMaterial);
+	l->SetMaterial(AddMaterial("light_vec", "light_frag"));
 	spotLights.push_back(l);
 	return spotLights[spotLights.size() - 1];
 }

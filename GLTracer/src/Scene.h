@@ -32,8 +32,6 @@ private:
 	float width;
 	float height;
 
-	Material * lightMaterial;
-
 public:
 	Scene();
 

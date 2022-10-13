@@ -188,13 +188,15 @@ void Renderer::Draw()
 	
 	for (auto& light : scene->GetDirLights()) {
 		auto mat = light->GetMaterial();
-		mat->Use();
+		if (mat != nullptr) {
+			mat->Use();
 
-		mat->SetMatrix4("view", 1, GL_FALSE, view);
-		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
-		mat->SetMatrix4("model", 1, GL_FALSE, light->GetTransform());
-		light->draw();
-		mat->StopUsing();
+			mat->SetMatrix4("view", 1, GL_FALSE, view);
+			mat->SetMatrix4("projection", 1, GL_FALSE, proj);
+			mat->SetMatrix4("model", 1, GL_FALSE, light->GetTransform());
+			light->draw();
+			mat->StopUsing();
+		}
 	}
 	for (auto& light : scene->GetPointLights()) {
 		auto mat = light->GetMaterial();
@@ -233,7 +235,7 @@ void Renderer::Draw()
 		mat->SetMatrix4("view", 1, GL_FALSE, view);
 		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
 
-		box->ChangeScale(glm::vec3(1));
+		//box->ChangeScale(glm::vec3(1));
 		box->ChangeRot((float)glfwGetTime() * 25.0f, glm::vec3(0, 1, 0));
 		mat->SetMatrix4("model", 1, GL_FALSE, box->GetTransform());
 		box->draw();

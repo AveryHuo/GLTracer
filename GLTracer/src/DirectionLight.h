@@ -95,8 +95,10 @@ public:
         if (!isInit)
             return;
 
-        if(bindMaterial != nullptr)
-            bindMaterial ->SetVector3("lightColor", diffuse);
+        if (bindMaterial != nullptr) {
+            bindMaterial->SetVector3("lightColor", diffuse);
+        }
+            
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);

@@ -33,16 +33,39 @@ Material * mat4;
 bool show_demo_window = true;
 bool show_another_window = false;
 static int counter = 0;
-ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+ImVec4 directionColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+ImVec4 spotColor = ImVec4(1.0f, 0, 0, 1.00f);
+float spotPos[3] = { 0, 2.0f, -2.0f };
+float spotDir[3] = {0,-1,0};
+
+float constant = 1.0f;
+float linear = 0.0448f;
+float quadratic = 0.032f;
+float cutOff = 12.5f; //degrees
+float outerCutOff = 17.5f;//degrees
 
 void MainLoop(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
 
+	for (auto& light : scene->GetDirLights()) {
+		light->SetDiffuse(glm::vec3(directionColor.x, directionColor.y, directionColor.z));
+	}
+
+	for (auto& light : scene->GetSpotLights()) {
+		light->SetDiffuse(glm::vec3(spotColor.x, spotColor.y, spotColor.z));
+		light->ChangePos(glm::vec3(spotPos[0], spotPos[1], spotPos[2]));
+		light->SetDirection(glm::vec3(spotDir[0], spotDir[1], spotDir[2]));
+		light->SetConstant(constant);
+		light->SetLinear(linear);
+		light->SetQuadratic(quadratic);
+		light->SetCutOff(cutOff);
+		light->SetOuterCutOff(outerCutOff);
+	}
+
 	render->Update(window);
 	render->Draw();
-
 
 	//swap buffer ºÍ´¦Àíevent
 	glfwPollEvents();
@@ -69,8 +92,16 @@ void MainLoop(GLFWwindow* window) {
 		ImGui::Checkbox("Another Window", &show_another_window);
 		
 		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
+		ImGui::ColorEdit3("diretional color", (float*)&directionColor); // Edit 3 floats representing a color
+		ImGui::ColorEdit3("spot color", (float*)&spotColor); // Edit 3 floats representing a color
+		ImGui::SliderFloat3("spot pos", (float*)&spotPos, -10, 10);
+		ImGui::SliderFloat3("spot direction", (float*)&spotDir, -1, 1);
+		ImGui::SliderFloat("spot constant", &constant, 0.0f, 1.0f);
+		ImGui::SliderFloat("spot linear", &linear, 0.0f, 1.0f);
+		ImGui::SliderFloat("spot quadratic", &quadratic, 0.0f, 1.0f);
+		ImGui::SliderFloat("spot cutOff", &cutOff, 0.0f, 100.0f);
+		ImGui::SliderFloat("spot outerCutOff", &outerCutOff, 0.0f, 100.0f);
+		
 		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
 			{
 			counter++;
@@ -109,6 +140,7 @@ void InitRender() {
 	mat4 = scene->AddMaterial("vec_struct", "frag_struct");
 	auto dir = scene->AddDirectionLight(glm::vec3(2.0f, 0.6f, -2.0f));
 	dir->ChangeScale(glm::vec3(0.1f));
+	dir->SetAmbient(glm::vec3(0.002f));
 	dir->SetDiffuse(glm::vec3(1.0f, 0, 0));
 	dir->SetDirection(glm::vec3(2.0f, 0.6f, -2.0f));
 
@@ -120,14 +152,14 @@ void InitRender() {
 	point2->ChangeScale(glm::vec3(0.1f));
 	point2->SetAmbient(glm::vec3(10.0f));
 
-	auto spot = scene->AddSpotLight(glm::vec3(-2.0f, 0.6f, -2.0f));
+	auto spot = scene->AddSpotLight(glm::vec3(0.0f, 2.0f, -2.0f));
 	spot->ChangeScale(glm::vec3(0.1f));
-	spot->SetDirection(glm::vec3(-2.0f, 0.6f, -2.0f));
 
-	auto spot2 = scene->AddSpotLight(glm::vec3(-2.0f, 0, -2.0f));
+	/*auto spot2 = scene->AddSpotLight(glm::vec3(-2.0f, 0, -2.0f));
 	spot2->ChangeScale(glm::vec3(0.1f));
-	spot2->SetDirection(glm::vec3(-2.0f, 0, -2.0f));
+	spot2->SetDirection(glm::vec3(-2.0f, 0, -2.0f));*/
 	
+
 	scene->AddBox(glm::vec3(2.0f, -1.8f, -2.0f), mat4);
 	scene->AddSphere(glm::vec3(-1.0f, -1.8f, -2.0f), mat4);
 	scene->AddCylinder(glm::vec3(-2.0f, -1.8f, -2.0f), mat4);

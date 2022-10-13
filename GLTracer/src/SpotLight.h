@@ -57,10 +57,10 @@ protected:
     glm::vec3 diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
     glm::vec3 specular = glm::vec3(1.0f, 1.0f, 1.0f);
     float constant = 1.0f;
-    float linear = 0.09f;
+    float linear = 0.0448f;
     float quadratic = 0.032f;
     float cutOff = 12.5f; //degrees
-    float outerCutOff = 15.0f;//degrees
+    float outerCutOff = 17.5f;//degrees
 public:
     void SetDirection(glm::vec3 v) { direction = v; };
     glm::vec3 GetDirection(){return direction;};
@@ -95,6 +95,7 @@ public:
     void init() override {
         if(isInit)
             return;
+
         glGenVertexArrays(1, &vao);
         glGenBuffers(1, &lightVbo);
         glBindVertexArray(vao);
@@ -128,7 +129,7 @@ public:
         mat->SetFloat(string_format("spotLights[%d].constant", idx), this->GetConstant());
         mat->SetFloat(string_format("spotLights[%d].linear", idx), this->GetLinear());
         mat->SetFloat(string_format("spotLights[%d].quadratic", idx), this->GetQuadratic());
-        mat->SetFloat(string_format("spotLights[%d].cutOff", idx), this->GetCutOff());
-        mat->SetFloat(string_format("spotLights[%d].outerCutOff", idx), this->GetOuterCutOff());
+        mat->SetFloat(string_format("spotLights[%d].cutOff", idx), glm::cos(glm::radians(this->GetCutOff())));
+        mat->SetFloat(string_format("spotLights[%d].outerCutOff", idx), glm::cos(glm::radians(this->GetOuterCutOff())));
     }
 };
