@@ -37,6 +37,8 @@ ImVec4 directionColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 ImVec4 spotColor = ImVec4(1.0f, 0, 0, 1.00f);
 float spotPos[3] = { 0, 2.0f, -2.0f };
 float spotDir[3] = {0,-1,0};
+float planeRot = -90.0f;
+float spotAmbient = 0.05f;
 
 float constant = 1.0f;
 float linear = 0.0448f;
@@ -47,6 +49,10 @@ float outerCutOff = 17.5f;//degrees
 void MainLoop(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
+	}
+
+	for (auto& quad : scene->GetQuads()) {
+		quad->ChangeRot(planeRot, glm::vec3(1, 0, 0));
 	}
 
 	for (auto& light : scene->GetDirLights()) {
@@ -62,6 +68,7 @@ void MainLoop(GLFWwindow* window) {
 		light->SetQuadratic(quadratic);
 		light->SetCutOff(cutOff);
 		light->SetOuterCutOff(outerCutOff);
+		light->SetAmbient(glm::vec3(spotAmbient));
 	}
 
 	render->Update(window);
@@ -91,6 +98,7 @@ void MainLoop(GLFWwindow* window) {
 		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
 		ImGui::Checkbox("Another Window", &show_another_window);
 		
+		ImGui::SliderFloat("quad rot", &planeRot, 0.0f, 360.0f);
 		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
 		ImGui::ColorEdit3("diretional color", (float*)&directionColor); // Edit 3 floats representing a color
 		ImGui::ColorEdit3("spot color", (float*)&spotColor); // Edit 3 floats representing a color
@@ -101,6 +109,7 @@ void MainLoop(GLFWwindow* window) {
 		ImGui::SliderFloat("spot quadratic", &quadratic, 0.0f, 1.0f);
 		ImGui::SliderFloat("spot cutOff", &cutOff, 0.0f, 100.0f);
 		ImGui::SliderFloat("spot outerCutOff", &outerCutOff, 0.0f, 100.0f);
+		ImGui::SliderFloat("spot Ambient", &spotAmbient, 0.0f, 1.0f);
 		
 		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
 			{
