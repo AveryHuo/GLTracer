@@ -222,10 +222,12 @@ void Renderer::Draw()
 	for (auto& box : scene->GetBoxs()) {
 		auto mat = box->GetMaterial();
 		mat->Use();
+		mat->SetBool("useNormalMap", false);
+
 		MaterialHelper::AddLightsToMaterial(scene, mat);
 
 		mat->SetFloat("material.shininess", 32.0f);
-
+		
 		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
 
 		mat->SetFloat("mixValue", materialValue1);
@@ -243,7 +245,7 @@ void Renderer::Draw()
 		auto mat = sphere->GetMaterial();
 		mat->Use();
 		MaterialHelper::AddLightsToMaterial(scene, mat);
-
+		mat->SetBool("useNormalMap", false);
 		mat->SetFloat("material.shininess", 32.0f);
 
 		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
@@ -263,7 +265,7 @@ void Renderer::Draw()
 		auto mat = cylinder->GetMaterial();
 		mat->Use();
 		MaterialHelper::AddLightsToMaterial(scene, mat);
-
+		mat->SetBool("useNormalMap", false);
 		mat->SetFloat("material.shininess", 32.0f);
 
 		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
@@ -283,7 +285,7 @@ void Renderer::Draw()
 		auto mat = quad->GetMaterial();
 		mat->Use();
 		MaterialHelper::AddLightsToMaterial(scene, mat);
-
+		mat->SetBool("useNormalMap", false);
 		mat->SetFloat("material.shininess", 32.0f);
 
 		mat->SetVector3("viewPos", mainCamera->GetCameraPos());

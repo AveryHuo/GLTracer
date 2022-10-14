@@ -84,6 +84,11 @@ void Material::SetTextureSampler(const std::string key, int val) const
     SetInt(key, val);
 }
 
+void Material::SetBool(const std::string key, bool val) const
+{
+    SetInt(key, val);
+}
+
 void Material::SetFloat(const std::string key, float val) const
 {
     glUniform1f(glGetUniformLocation(object, key.c_str()), val);

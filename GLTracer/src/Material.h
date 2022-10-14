@@ -26,6 +26,7 @@ public:
     void StopUsing() const;
     GLuint GetObject() const;
     void SetTextureSampler(const std::string key, int val) const;
+    void SetBool(const std::string key, bool val)  const;
     void SetFloat(const std::string key, float val)  const;
     void SetInt(const std::string key, int val)  const;
     void SetMatrix4(const std::string key,int count, GLboolean transport, glm::mat4 val)  const;

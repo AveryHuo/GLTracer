@@ -191,10 +191,10 @@ void Scene::InitMaterialTextures() {
 		mat->Use();
 		for (const auto& [textChannel, texture] : textures) {
 			if (textChannel == GL_TEXTURE0) {
-				mat->SetTextureSampler("material.diffuse", 0);
+				mat->SetTextureSampler("material.texture_diffuse1", 0);
 			}
 			else if (textChannel == GL_TEXTURE1) {
-				mat->SetTextureSampler("material.specular", 1);
+				mat->SetTextureSampler("material.texture_specular1", 1);
 			}
 		}
 	}
