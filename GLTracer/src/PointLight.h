@@ -84,8 +84,6 @@ public:
         if(isInit)
             return;
 
-        if (bindMaterial != nullptr)
-            bindMaterial->SetVector3("lightColor", diffuse);
         glGenVertexArrays(1, &vao);
         glGenBuffers(1, &lightVbo);
         glBindVertexArray(vao);
@@ -101,6 +99,10 @@ public:
     void draw() const override {
         if (!isInit)
             return;
+
+
+        if (bindMaterial != nullptr)
+            bindMaterial->SetVector3("lightColor", diffuse);
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);

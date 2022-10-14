@@ -81,14 +81,9 @@ Quad* Scene::AddQuad(glm::vec3 initPos, Material* material)
 	return quads[quads.size()-1];
 }
 
-Texture *Scene::AddTexture(const int channel, const std::string path, const GLint colorRange)
+Texture *Scene::AddTexture(const int channel, const std::string path)
 {
-	return AddTexture(channel, path, colorRange, GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR);
-}
-
-Texture *Scene::AddTexture(const int channel, const std::string path, const GLint colorRange, GLint wrapS, GLint wrapT, GLint minFilter, GLint magFilter)
-{
-	Texture *texture = new Texture(path, colorRange, wrapS, wrapT, minFilter, magFilter);
+	Texture* texture = new Texture(path);
 	if (texture->IsLoadSuccess()) {
 		textureMap.insert({ channel, texture });
 		return texture;
@@ -196,10 +191,10 @@ void Scene::InitMaterialTextures() {
 		mat->Use();
 		for (const auto& [textChannel, texture] : textures) {
 			if (textChannel == GL_TEXTURE0) {
-				mat->SetTextureSampler("texture1", 0);
+				mat->SetTextureSampler("material.diffuse", 0);
 			}
 			else if (textChannel == GL_TEXTURE1) {
-				mat->SetTextureSampler("texture2", 1);
+				mat->SetTextureSampler("material.specular", 1);
 			}
 		}
 	}

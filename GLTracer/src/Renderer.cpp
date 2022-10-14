@@ -224,9 +224,6 @@ void Renderer::Draw()
 		mat->Use();
 		MaterialHelper::AddLightsToMaterial(scene, mat);
 
-		mat->SetVector3("material.ambient", 0.1f, 0.1f, 0.1f);
-		mat->SetVector3("material.diffuse", 1.0f, 1, 1);
-		mat->SetVector3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
 		mat->SetFloat("material.shininess", 32.0f);
 
 		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
@@ -247,9 +244,6 @@ void Renderer::Draw()
 		mat->Use();
 		MaterialHelper::AddLightsToMaterial(scene, mat);
 
-		mat->SetVector3("material.ambient", 0.1f, 0.1f, 0.1f);
-		mat->SetVector3("material.diffuse", 1.0f, 1, 1);
-		mat->SetVector3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
 		mat->SetFloat("material.shininess", 32.0f);
 
 		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
@@ -270,9 +264,6 @@ void Renderer::Draw()
 		mat->Use();
 		MaterialHelper::AddLightsToMaterial(scene, mat);
 
-		mat->SetVector3("material.ambient", 0.1f, 0.1f, 0.1f);
-		mat->SetVector3("material.diffuse", 1.0f, 1, 1);
-		mat->SetVector3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
 		mat->SetFloat("material.shininess", 32.0f);
 
 		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
@@ -293,9 +284,6 @@ void Renderer::Draw()
 		mat->Use();
 		MaterialHelper::AddLightsToMaterial(scene, mat);
 
-		mat->SetVector3("material.ambient", 0.1f, 0.1f, 0.1f);
-		mat->SetVector3("material.diffuse", 1.0f, 1, 1);
-		mat->SetVector3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
 		mat->SetFloat("material.shininess", 32.0f);
 
 		mat->SetVector3("viewPos", mainCamera->GetCameraPos());

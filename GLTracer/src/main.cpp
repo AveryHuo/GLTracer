@@ -34,7 +34,7 @@ bool show_demo_window = true;
 bool show_another_window = false;
 static int counter = 0;
 ImVec4 directionColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-ImVec4 spotColor = ImVec4(1.0f, 0, 0, 1.00f);
+ImVec4 spotColor = ImVec4(1.0f, 1.0f, 1.0f, 1.00f);
 float spotPos[3] = { 0, 2.0f, -2.0f };
 float spotDir[3] = {0,-1,0};
 float planeRot = -90.0f;
@@ -55,19 +55,16 @@ void MainLoop(GLFWwindow* window) {
 		quad->ChangeRot(planeRot, glm::vec3(1, 0, 0));
 	}
 
-	for (auto& light : scene->GetDirLights()) {
+	for (auto& light : scene->GetPointLights()) {
 		light->SetDiffuse(glm::vec3(directionColor.x, directionColor.y, directionColor.z));
 	}
 
-	for (auto& light : scene->GetSpotLights()) {
+	for (auto& light : scene->GetPointLights()) {
 		light->SetDiffuse(glm::vec3(spotColor.x, spotColor.y, spotColor.z));
 		light->ChangePos(glm::vec3(spotPos[0], spotPos[1], spotPos[2]));
-		light->SetDirection(glm::vec3(spotDir[0], spotDir[1], spotDir[2]));
 		light->SetConstant(constant);
 		light->SetLinear(linear);
 		light->SetQuadratic(quadratic);
-		light->SetCutOff(cutOff);
-		light->SetOuterCutOff(outerCutOff);
 		light->SetAmbient(glm::vec3(spotAmbient));
 	}
 
@@ -101,15 +98,13 @@ void MainLoop(GLFWwindow* window) {
 		ImGui::SliderFloat("quad rot", &planeRot, 0.0f, 360.0f);
 		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
 		ImGui::ColorEdit3("diretional color", (float*)&directionColor); // Edit 3 floats representing a color
-		ImGui::ColorEdit3("spot color", (float*)&spotColor); // Edit 3 floats representing a color
-		ImGui::SliderFloat3("spot pos", (float*)&spotPos, -10, 10);
-		ImGui::SliderFloat3("spot direction", (float*)&spotDir, -1, 1);
-		ImGui::SliderFloat("spot constant", &constant, 0.0f, 1.0f);
-		ImGui::SliderFloat("spot linear", &linear, 0.0f, 1.0f);
-		ImGui::SliderFloat("spot quadratic", &quadratic, 0.0f, 1.0f);
-		ImGui::SliderFloat("spot cutOff", &cutOff, 0.0f, 100.0f);
-		ImGui::SliderFloat("spot outerCutOff", &outerCutOff, 0.0f, 100.0f);
-		ImGui::SliderFloat("spot Ambient", &spotAmbient, 0.0f, 1.0f);
+		ImGui::ColorEdit3("point color", (float*)&spotColor); // Edit 3 floats representing a color
+		ImGui::SliderFloat3("point pos", (float*)&spotPos, -10, 10);
+		ImGui::SliderFloat3("point direction", (float*)&spotDir, -1, 1);
+		ImGui::SliderFloat("point constant", &constant, 0.0f, 1.0f);
+		ImGui::SliderFloat("point linear", &linear, 0.0f, 1.0f);
+		ImGui::SliderFloat("point quadratic", &quadratic, 0.0f, 1.0f);
+		ImGui::SliderFloat("point Ambient", &spotAmbient, 0.0f, 1.0f);
 		
 		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
 			{
@@ -155,11 +150,9 @@ void InitRender() {
 
 	auto point = scene->AddPointLight(glm::vec3(0.0f, 0.6f, -2.0f));
 	point->ChangeScale(glm::vec3(0.1f));
-	point->SetAmbient(glm::vec3(1.0f));
 
 	auto point2 = scene->AddPointLight(glm::vec3(0.0f, 1.0f, -2.0f));
 	point2->ChangeScale(glm::vec3(0.1f));
-	point2->SetAmbient(glm::vec3(10.0f));
 
 	auto spot = scene->AddSpotLight(glm::vec3(0.0f, 2.0f, -2.0f));
 	spot->ChangeScale(glm::vec3(0.1f));
@@ -183,8 +176,8 @@ void InitRender() {
 	//scene->AddBox(glm::vec3(1.5f, 2.0f, -2.5f), *mat1);
 	//scene->AddBox(glm::vec3(1.5f, 0.2f, -1.5f), *mat1);
 	//scene->AddBox(glm::vec3(-1.3f, 1.0f, -1.5f), *mat1);
-	scene->AddTexture(GL_TEXTURE0, resDir + std::string("block.jpg"), GL_RGB);
-	scene->AddTexture(GL_TEXTURE1, resDir + std::string("over.png"), GL_RGBA);
+	scene->AddTexture(GL_TEXTURE0, resDir + std::string("block.jpg"));
+	scene->AddTexture(GL_TEXTURE1, resDir + std::string("over.png"));
 	scene->AddCamera(2.5f, true);
 
 	render = new Renderer(scene);

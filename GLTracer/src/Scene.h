@@ -56,8 +56,7 @@ public:
 	Sphere* AddSphere(glm::vec3 initPos, Material* material);
 	Cylinder* AddCylinder(glm::vec3 initPos, Material* material);
 	Quad* AddQuad(glm::vec3 initPos, Material* material);
-	Texture* AddTexture(const int channel, const std::string path, const GLint colorRange);
-	Texture* AddTexture(const int channel, const std::string path, const GLint colorRange, GLint wrapS, GLint wrapT, GLint minFilter, GLint magFilter);
+	Texture* AddTexture(const int channel, const std::string path);
 	Material* AddMaterial(const std::string vertShaderName, const std::string fragShaderName);
 	Camera* AddCamera(const float speed, const bool isMainCamera);
 

@@ -31,7 +31,7 @@ public:
         }
 
         std::vector<PointLight*> pointLights = scene->GetPointLights();
-        if (spotLights.size() > 0) {
+        if (pointLights.size() > 0) {
             for (int i = 0; i < pointLights.size(); i++) {
                 auto light = pointLights[i];
                 light->applyToMaterial(mat, i);
