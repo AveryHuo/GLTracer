@@ -127,7 +127,7 @@ std::vector<Texture *> Model::loadMaterialTextures(aiMaterial* mat, aiTextureTyp
 		}
 		if (!skip)
 		{ // if texture hasn¡¯t been loaded already, load it
-			Texture *texture = new Texture(str.C_Str(), directory, typeName);
+			Texture *texture = new Texture(str.C_Str(), directory, typeName, gammaCorrection);
 			textures.push_back(texture);
 			textures_loaded.push_back(texture); // add to loaded textures
 		}
