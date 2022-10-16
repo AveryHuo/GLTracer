@@ -87,7 +87,7 @@ void init() override{
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     isInit = true;
 }
-void draw() const override {
+void draw() override {
     if (!isInit)
         return;
     glBindVertexArray(vao);

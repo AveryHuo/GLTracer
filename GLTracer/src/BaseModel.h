@@ -51,5 +51,5 @@ public:
     }
     virtual void init() = 0;
     virtual void unInit() = 0;
-    virtual void draw() const = 0;
+    virtual void draw() = 0;
 };

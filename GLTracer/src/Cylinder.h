@@ -60,12 +60,12 @@ public:
     // draw in VertexArray mode
     void init() override;
     void unInit() override;
-    void draw() const override;          // draw all
+    void draw() override;          // draw all
     void drawBase() const;      // draw base cap only
     void drawTop() const;       // draw top cap only
     void drawSide() const;      // draw side only
     void drawLines(const float lineColor[4]) const;     // draw lines only
-    void drawWithLines(const float lineColor[4]) const; // draw surface and lines
+    void drawWithLines(const float lineColor[4]); // draw surface and lines
 
     // debug
     void printSelf() const;

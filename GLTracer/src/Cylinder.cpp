@@ -160,7 +160,7 @@ void Cylinder::unInit()
 // draw a cylinder in VertexArray mode
 // OpenGL RC must be set before calling it
 ///////////////////////////////////////////////////////////////////////////////
-void Cylinder::draw() const
+void Cylinder::draw()
 {
     if(!isInit)
         return;
@@ -276,7 +276,7 @@ void Cylinder::drawLines(const float lineColor[4]) const
 // draw a cylinder surfaces and lines on top of it
 // the caller must set the line width before call this
 ///////////////////////////////////////////////////////////////////////////////
-void Cylinder::drawWithLines(const float lineColor[4]) const
+void Cylinder::drawWithLines(const float lineColor[4])
 {
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(1.0, 1.0f); // move polygon backward

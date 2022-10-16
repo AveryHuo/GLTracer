@@ -1,9 +1,11 @@
 #include "Model.h"
 #include "stb_image.h"
-void Model::Draw(Material& material)
+
+
+void Model::draw()
 {
 	for (unsigned int i = 0; i < meshes.size(); i++)
-		meshes[i].Draw(material);
+		meshes[i].Draw(*bindMaterial);
 }
 
 void Model::loadModel(std::string path)
@@ -65,19 +67,25 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 			vec.x = mesh->mTextureCoords[0][i].x;
 			vec.y = mesh->mTextureCoords[0][i].y;
 			vertex.TexCoords = vec;
+		}
+		else
+			vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+
+		if(mesh->mTangents){
 			// tangent
 			vector.x = mesh->mTangents[i].x;
 			vector.y = mesh->mTangents[i].y;
 			vector.z = mesh->mTangents[i].z;
 			vertex.Tangent = vector;
+		}
+		if(mesh->mBitangents){
 			// bitangent
 			vector.x = mesh->mBitangents[i].x;
 			vector.y = mesh->mBitangents[i].y;
 			vector.z = mesh->mBitangents[i].z;
 			vertex.Bitangent = vector;
 		}
-		else
-			vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+
 		vertices.push_back(vertex);
 	}
 	// process indices

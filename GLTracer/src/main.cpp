@@ -10,7 +10,7 @@
 #include "Shader.h"
 #include "Material.h"
 #include "Texture.h"
-#include "stb_image.h"
+//#include "stb_image.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -20,6 +20,7 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
+#include "Model.h"
 
 const char* glsl_version = "#version 130";
 // settings
@@ -55,7 +56,7 @@ void MainLoop(GLFWwindow* window) {
 		quad->ChangeRot(planeRot, glm::vec3(1, 0, 0));
 	}
 
-	for (auto& light : scene->GetPointLights()) {
+	for (auto& light : scene->GetDirLights()) {
 		light->SetDiffuse(glm::vec3(directionColor.x, directionColor.y, directionColor.z));
 	}
 
@@ -162,10 +163,14 @@ void InitRender() {
 	spot2->SetDirection(glm::vec3(-2.0f, 0, -2.0f));*/
 	
 
-	scene->AddBox(glm::vec3(2.0f, -1.8f, -2.0f), mat4);
+	/*scene->AddBox(glm::vec3(2.0f, -1.8f, -2.0f), mat4);
 	scene->AddSphere(glm::vec3(-1.0f, -1.8f, -2.0f), mat4);
-	scene->AddCylinder(glm::vec3(-2.0f, -1.8f, -2.0f), mat4);
+	scene->AddCylinder(glm::vec3(-2.0f, -1.8f, -2.0f), mat4);*/
 	scene->AddQuad(glm::vec3(0.0f, -2.5f, -2.0f), mat4);
+	scene->AddModel(resDir + std::string("CoffeeCart_01_4k.gltf"), glm::vec3(0.0f, -2.5f, -2.0f), mat4);
+
+	/*Model *m = new Model(resDir+std::string("CoffeeCart_01_4k.gltf"));
+	*/
 	//scene->AddBox(glm::vec3(0.0f, 0.0f, 0.0f), *mat1);
 	//scene->AddBox(glm::vec3(2.0f, 5.0f, -15.0f), *mat1);
 	//scene->AddBox(glm::vec3(-1.5f, -2.2f, -2.5f), *mat1);

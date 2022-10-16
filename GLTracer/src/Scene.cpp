@@ -81,6 +81,15 @@ Quad* Scene::AddQuad(glm::vec3 initPos, Material* material)
 	return quads[quads.size()-1];
 }
 
+Model* Scene::AddModel(std::string path, glm::vec3 initPos, Material* material)
+{
+	Model* m = new Model(path);
+	m->ChangePos(initPos);
+	m->SetMaterial(material);
+	models.push_back(m);
+	return models[models.size() - 1];
+}
+
 Texture *Scene::AddTexture(const int channel, const std::string path)
 {
 	Texture* texture = new Texture(path);
@@ -145,6 +154,10 @@ void Scene::Load()
 	for (auto& quad : quads) {
 		quad->init();
 	}
+
+	for (auto& model : models) {
+		model->init();
+	}
 }
 
 void Scene::Unload()
@@ -173,6 +186,10 @@ void Scene::Unload()
 
 	for (auto& quad : quads) {
 		quad->unInit();
+	}
+
+	for (auto& model : models) {
+		model->unInit();
 	}
 }
 
@@ -240,12 +257,17 @@ Scene::~Scene()
 		delete quad;
 	}
 
+	for (auto& model : models) {
+		delete model;
+	}
+
 	dirLights.clear();
 	pointLights.clear();
 	spotLights.clear();
 	spheres.clear();
 	boxes.clear();
 	quads.clear();
+	models.clear();
 	mainCamera = nullptr;
 
 	for (auto iter = cameras.begin(); iter != cameras.end(); iter++) {

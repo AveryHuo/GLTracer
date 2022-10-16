@@ -301,6 +301,26 @@ void Renderer::Draw()
 		mat->StopUsing();
 	}
 
+	for (auto& model : scene->GetModels()) {
+		auto mat = model->GetMaterial();
+		mat->Use();
+		MaterialHelper::AddLightsToMaterial(scene, mat);
+		mat->SetBool("useNormalMap", false);
+		mat->SetFloat("material.shininess", 32.0f);
+
+		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
+
+		mat->SetFloat("mixValue", materialValue1);
+		mat->SetMatrix4("view", 1, GL_FALSE, view);
+		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
+
+		model->ChangeScale(glm::vec3(4));
+		//quad->ChangeRot(-90.0f, glm::vec3(1, 0, 0));
+		mat->SetMatrix4("model", 1, GL_FALSE, model->GetTransform());
+		model->draw();
+		mat->StopUsing();
+	}
+
 }
 
 Renderer::~Renderer()

@@ -139,7 +139,7 @@ void Sphere::unInit()
 // draw a sphere in VertexArray mode
 // OpenGL RC must be set before calling it
 ///////////////////////////////////////////////////////////////////////////////
-void Sphere::draw() const
+void Sphere::draw()
 {
     if(!isInit)
         return;
@@ -192,7 +192,7 @@ void Sphere::drawLines(const float lineColor[4]) const
 // draw a sphere surfaces and lines on top of it
 // the caller must set the line width before call this
 ///////////////////////////////////////////////////////////////////////////////
-void Sphere::drawWithLines(const float lineColor[4]) const
+void Sphere::drawWithLines(const float lineColor[4])
 {
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(1.0, 1.0f); // move polygon backward

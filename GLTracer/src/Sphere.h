@@ -48,9 +48,9 @@ public:
     void unInit() override;
     void readyDraw()const { glBindVertexArray(vao); }
     // draw in VertexArray mode
-    void draw() const override;                                  // draw surface
+    void draw() override;                                  // draw surface
     void drawLines(const float lineColor[4]) const;     // draw lines only
-    void drawWithLines(const float lineColor[4]) const; // draw surface and lines
+    void drawWithLines(const float lineColor[4]); // draw surface and lines
 
     // debug
     void printSelf() const;
