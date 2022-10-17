@@ -166,8 +166,8 @@ void InitRender() {
 	/*scene->AddBox(glm::vec3(2.0f, -1.8f, -2.0f), mat4);
 	scene->AddSphere(glm::vec3(-1.0f, -1.8f, -2.0f), mat4);
 	scene->AddCylinder(glm::vec3(-2.0f, -1.8f, -2.0f), mat4);*/
-	scene->AddQuad(glm::vec3(0.0f, -2.5f, -2.0f), mat4);
-	scene->AddModel(resDir + std::string("CoffeeCart_01_4k.gltf"), glm::vec3(0.0f, -2.5f, -2.0f), mat4);
+	scene->AddQuad(glm::vec3(0.0f, -2.5f, -10.0f), mat4);
+	scene->AddModel(resDir + std::string("CoffeeCart_01_4k.gltf"), glm::vec3(0.0f, -2.5f, -10.0f), mat4);
 
 	/*Model *m = new Model(resDir+std::string("CoffeeCart_01_4k.gltf"));
 	*/

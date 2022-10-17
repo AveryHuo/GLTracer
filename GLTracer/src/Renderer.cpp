@@ -152,8 +152,8 @@ void Renderer::WindowMouseScrollInputCallBack(GLFWwindow* window, double xoffset
 	zoom -= (float)yoffset;
 	if (zoom < 1.0f)
 		zoom = 1.0f;
-	if (zoom > 90.0f)
-		zoom = 90.0f;
+	if (zoom > 45.0f)
+		zoom = 45.0f;
 	scene->GetMainCamera()->SetCameraFov(zoom);
 }
 

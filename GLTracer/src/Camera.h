@@ -9,6 +9,7 @@ private:
 	glm::vec3 cameraPos;
 	glm::vec3 cameraFront;
 	glm::vec3 cameraUp;
+	glm::vec3 worldUp;
 	float cameraSpeed;
 	float fov;
 	float ratio;
@@ -16,10 +17,15 @@ private:
 public:
 	Camera();
 	void SetCameraSpeed(float speed);
-	void SetCameraPos(glm::vec3 val) { cameraPos = val; };
+	void SetCameraPos(glm::vec3 val) { cameraPos = val; UpdateCameraVectors(); };
+	void SetCameraWorldUp(glm::vec3 val) { worldUp = val; UpdateCameraVectors();
+	};
 	void SetCameraFov(float val){fov = val;};
 	void SetCameraRatio(float val) { ratio = val; };
-	void SetCameraFront(glm::vec3 front){cameraFront = front; };
+	void SetCameraFront(glm::vec3 front){cameraFront = front; UpdateCameraVectors();
+	};
+
+	void UpdateCameraVectors();
 
 	float GetCameraFov() { return fov;};
 	glm::vec3 GetCameraPos() const;
