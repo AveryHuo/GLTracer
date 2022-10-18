@@ -173,8 +173,13 @@ void Renderer::Draw()
 	//Render过程
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	// Must clear depth buffer otherwise can not show anything！
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // also clear the depth buffer now!
+	glStencilMask(0x00);
+	//glStencilMask(0xFF);
+	//glStencilMask(0x00);
+	//glStencilFunc(GL_EQUAL, 1, 0x00);
+	//glDepthMask(GL_FALSE);//关闭深度写入常常会用来渲染透明片元。 关闭时无法写入深度测试缓存区。
+	//glDepthFunc(GL_LESS);
 	for (const auto& [textChannel, texture] : textures) {
 		texture->AddToPipeline(textChannel);
 	}
@@ -294,14 +299,27 @@ void Renderer::Draw()
 		mat->SetMatrix4("view", 1, GL_FALSE, view);
 		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
 
-		quad->ChangeScale(glm::vec3(4));
+		quad->ChangeScale(glm::vec3(8));
 		//quad->ChangeRot(-90.0f, glm::vec3(1, 0, 0));
 		mat->SetMatrix4("model", 1, GL_FALSE, quad->GetTransform());
 		quad->draw();
 		mat->StopUsing();
 	}
 
+
+	int i = 0;
 	for (auto& model : scene->GetModels()) {
+		if (i == 0) {
+			//Set all stencil to 1, and draw only when 1&0xFF
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glStencilMask(0xFF);//allow write
+		}
+		else {
+			//Set all stencil to 0, and draw only not 1&0xFF
+			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+			glStencilMask(0x00);//disallow write to stencil
+			glDisable(GL_DEPTH_TEST); //disable and floor will not overlap?
+		}
 		auto mat = model->GetMaterial();
 		mat->Use();
 		MaterialHelper::AddLightsToMaterial(scene, mat);
@@ -314,11 +332,16 @@ void Renderer::Draw()
 		mat->SetMatrix4("view", 1, GL_FALSE, view);
 		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
 
-		model->ChangeScale(glm::vec3(4));
+		//model->ChangeScale(glm::vec3(4));
 		//quad->ChangeRot(-90.0f, glm::vec3(1, 0, 0));
 		mat->SetMatrix4("model", 1, GL_FALSE, model->GetTransform());
 		model->draw();
 		mat->StopUsing();
+
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glStencilMask(0xFF);
+		glEnable(GL_DEPTH_TEST);
+		i++;
 	}
 
 }

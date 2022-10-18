@@ -108,7 +108,8 @@ void main()
     for(int i = 0; i < NR_SPOT_LIGHTS; i++)
         result += CalcSpotLight(spotLights[i], norm, FragPos, viewDir);    
     
-    FragColor = vec4(result, 1.0);
+    //FragColor = vec4(result, 1.0);
+    FragColor = vec4(1.0, 0, 0, 1.0);
 
     //float depth = LinearizeDepth(gl_FragCoord.z) / far; // 为了演示除以 far
     //FragColor = vec4(vec3(depth), 1.0);

@@ -143,6 +143,7 @@ void InitRender() {
 	auto mat2 = scene->AddMaterial("vec_2", "frag_2");
 	auto mat3 = scene->AddMaterial("vec_3_viewspace", "frag_3_viewspace");
 	mat4 = scene->AddMaterial("vec_struct", "frag_struct");
+	auto mat5 = scene->AddMaterial("vec_struct_stencil_border", "frag_struct_stencil_border");
 	auto dir = scene->AddDirectionLight(glm::vec3(2.0f, 0.6f, -2.0f));
 	dir->ChangeScale(glm::vec3(0.1f));
 	dir->SetAmbient(glm::vec3(0.002f));
@@ -163,11 +164,14 @@ void InitRender() {
 	spot2->SetDirection(glm::vec3(-2.0f, 0, -2.0f));*/
 	
 
-	/*scene->AddBox(glm::vec3(2.0f, -1.8f, -2.0f), mat4);
+	/*scene->AddBox(glm::vec3(0.0f, -1.8f, -10.0f), mat4);
 	scene->AddSphere(glm::vec3(-1.0f, -1.8f, -2.0f), mat4);
 	scene->AddCylinder(glm::vec3(-2.0f, -1.8f, -2.0f), mat4);*/
 	scene->AddQuad(glm::vec3(0.0f, -2.5f, -10.0f), mat4);
-	scene->AddModel(resDir + std::string("CoffeeCart_01_4k.gltf"), glm::vec3(0.0f, -2.5f, -10.0f), mat4);
+	auto model1 = scene->AddModel(resDir + std::string("CoffeeCart_01_4k.gltf"), glm::vec3(0.0f, -2.5f, -10.0f), mat4);
+	model1->ChangeScale(glm::vec3(4.1f));
+	auto model2 = scene->AddModel(resDir + std::string("CoffeeCart_01_4k.gltf"), glm::vec3(0.0f, -2.5f, -10.0f), mat5);
+	model2->ChangeScale(glm::vec3(4.15f));
 
 	/*Model *m = new Model(resDir+std::string("CoffeeCart_01_4k.gltf"));
 	*/
@@ -226,6 +230,11 @@ int main() {
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_STENCIL_TEST);
+	
+	/*glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);*/
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 	InitRender();
 
