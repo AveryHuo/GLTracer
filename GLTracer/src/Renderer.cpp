@@ -318,7 +318,7 @@ void Renderer::Draw()
 			//Set all stencil to 0, and draw only not 1&0xFF
 			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 			glStencilMask(0x00);//disallow write to stencil
-			glDisable(GL_DEPTH_TEST); //disable and floor will not overlap?
+			//glDisable(GL_DEPTH_TEST); //disable , so always draw!
 		}
 		auto mat = model->GetMaterial();
 		mat->Use();
@@ -338,9 +338,9 @@ void Renderer::Draw()
 		model->draw();
 		mat->StopUsing();
 
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		glStencilMask(0xFF);
-		glEnable(GL_DEPTH_TEST);
+		glStencilFunc(GL_ALWAYS, 0, 0xFF);
+		//glEnable(GL_DEPTH_TEST);
 		i++;
 	}
 
