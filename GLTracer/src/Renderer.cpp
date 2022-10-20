@@ -17,7 +17,6 @@ Renderer::Renderer(Scene* scene) :scene(scene), materialValue1(0.2f), enableMain
 
 
 void Renderer::LoadScene() {
-	scene->InitMaterialTextures();
 	scene->Load();
 }
 
@@ -165,11 +164,6 @@ void Renderer::Draw()
 		return;
 	}
 
-	auto textures = scene->GetTextureMap();
-	if (textures.size() == 0) {
-		return;
-	}
-
 	//Render过程
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	// Must clear depth buffer otherwise can not show anything！
@@ -180,9 +174,6 @@ void Renderer::Draw()
 	//glStencilFunc(GL_EQUAL, 1, 0x00);
 	//glDepthMask(GL_FALSE);//关闭深度写入常常会用来渲染透明片元。 关闭时无法写入深度测试缓存区。
 	//glDepthFunc(GL_LESS);
-	for (const auto& [textChannel, texture] : textures) {
-		texture->AddToPipeline(textChannel);
-	}
 
 	glm::mat4 view = glm::mat4(1.0f);
 	view = glm::translate(view, glm::vec3(0, 0, -3));
@@ -190,12 +181,10 @@ void Renderer::Draw()
 	view = mainCamera->GetViewMatrix();
 	glm::mat4 proj = mainCamera->GetProjectMatrix();
 
-	
 	for (auto& light : scene->GetDirLights()) {
 		auto mat = light->GetMaterial();
 		if (mat != nullptr) {
 			mat->Use();
-
 			mat->SetMatrix4("view", 1, GL_FALSE, view);
 			mat->SetMatrix4("projection", 1, GL_FALSE, proj);
 			mat->SetMatrix4("model", 1, GL_FALSE, light->GetTransform());
@@ -206,7 +195,6 @@ void Renderer::Draw()
 	for (auto& light : scene->GetPointLights()) {
 		auto mat = light->GetMaterial();
 		mat->Use();
-
 		mat->SetMatrix4("view", 1, GL_FALSE, view);
 		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
 		mat->SetMatrix4("model", 1, GL_FALSE, light->GetTransform());
@@ -216,7 +204,6 @@ void Renderer::Draw()
 	for (auto& light : scene->GetSpotLights()) {
 		auto mat = light->GetMaterial();
 		mat->Use();
-
 		mat->SetMatrix4("view", 1, GL_FALSE, view);
 		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
 		mat->SetMatrix4("model", 1, GL_FALSE, light->GetTransform());

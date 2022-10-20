@@ -139,10 +139,19 @@ void MainLoop(GLFWwindow* window) {
 void InitRender() {
 	scene = new Scene();
 	scene->SetSceneSize(SCR_WIDTH, SCR_HEIGHT);
+	auto texture1 = scene->AddTexture(resDir + std::string("block.jpg"));
+	auto texture2 = scene->AddTexture(resDir + std::string("over.png"));
+
 	auto mat1 = scene->AddMaterial("vec", "frag");
 	auto mat2 = scene->AddMaterial("vec_2", "frag_2");
 	auto mat3 = scene->AddMaterial("vec_3_viewspace", "frag_3_viewspace");
 	mat4 = scene->AddMaterial("vec_struct", "frag_struct");
+	mat4->SetTexture("material.texture_diffuse1", GL_TEXTURE0, texture1);
+	mat4->SetTexture("material.texture_specular1", GL_TEXTURE1, texture2);
+
+	auto mat41 = scene->AddMaterial("vec_struct", "frag_struct");
+	mat41->SetTexture("material.texture_diffuse1", GL_TEXTURE0, texture2);
+	mat41->SetTexture("material.texture_specular1", GL_TEXTURE1, texture2);
 	auto mat5 = scene->AddMaterial("vec_struct_stencil_border", "frag_struct_stencil_border");
 	auto dir = scene->AddDirectionLight(glm::vec3(2.0f, 0.6f, -2.0f));
 	dir->ChangeScale(glm::vec3(0.1f));
@@ -164,9 +173,9 @@ void InitRender() {
 	spot2->SetDirection(glm::vec3(-2.0f, 0, -2.0f));*/
 	
 
-	/*scene->AddBox(glm::vec3(0.0f, -1.8f, -10.0f), mat4);
-	scene->AddSphere(glm::vec3(-1.0f, -1.8f, -2.0f), mat4);
-	scene->AddCylinder(glm::vec3(-2.0f, -1.8f, -2.0f), mat4);*/
+	scene->AddBox(glm::vec3(0.0f, -1.8f, -10.0f), mat41);
+	scene->AddSphere(glm::vec3(-1.0f, -1.8f, -2.0f), mat41);
+	scene->AddCylinder(glm::vec3(-2.0f, -1.8f, -2.0f), mat41);
 	scene->AddQuad(glm::vec3(0.0f, -2.5f, -10.0f), mat4);
 	auto model1 = scene->AddModel(resDir + std::string("CoffeeCart_01_4k.gltf"), glm::vec3(0.0f, -2.5f, -10.0f), mat4);
 	model1->ChangeScale(glm::vec3(4.1f));
@@ -185,8 +194,7 @@ void InitRender() {
 	//scene->AddBox(glm::vec3(1.5f, 2.0f, -2.5f), *mat1);
 	//scene->AddBox(glm::vec3(1.5f, 0.2f, -1.5f), *mat1);
 	//scene->AddBox(glm::vec3(-1.3f, 1.0f, -1.5f), *mat1);
-	scene->AddTexture(GL_TEXTURE0, resDir + std::string("block.jpg"));
-	scene->AddTexture(GL_TEXTURE1, resDir + std::string("over.png"));
+	
 	scene->AddCamera(2.5f, true);
 
 	render = new Renderer(scene);

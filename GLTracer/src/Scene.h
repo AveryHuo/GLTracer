@@ -20,7 +20,7 @@ class Scene
 {
 private:
 	std::vector<Material*> materials;
-	std::map<int, Texture*> textureMap;
+	std::vector<Texture*> textures;
 	std::vector<Quad*> quads;
 	std::vector<Cylinder*> cylinders;
 	std::vector<Sphere*> spheres;
@@ -39,7 +39,6 @@ public:
 
 	void SetSceneSize(float w, float h);
 
-	const std::map<int, Texture*> GetTextureMap() { return textureMap; };
 	const std::vector<Material*> GetAllMaterials() { return materials; };
 	std::vector<Box*> GetBoxs() { return boxes; };
 	std::vector<DirectionLight*> GetDirLights() { return dirLights; };
@@ -60,7 +59,7 @@ public:
 	Cylinder* AddCylinder(glm::vec3 initPos, Material* material);
 	Quad* AddQuad(glm::vec3 initPos, Material* material);
 	Model* AddModel(std::string path, glm::vec3 initPos, Material* material);
-	Texture* AddTexture(const int channel, const std::string path);
+	Texture* AddTexture(const std::string path);
 	Material* AddMaterial(const std::string vertShaderName, const std::string fragShaderName);
 	Camera* AddCamera(const float speed, const bool isMainCamera);
 

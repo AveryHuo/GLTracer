@@ -61,6 +61,8 @@ void init() override{
 void draw() override {
     if (!isInit)
         return;
+    if (bindMaterial)
+        bindMaterial->ReadyTextures();
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);

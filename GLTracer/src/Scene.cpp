@@ -90,13 +90,14 @@ Model* Scene::AddModel(std::string path, glm::vec3 initPos, Material* material)
 	return models[models.size() - 1];
 }
 
-Texture *Scene::AddTexture(const int channel, const std::string path)
+Texture *Scene::AddTexture(const std::string path)
 {
 	Texture* texture = new Texture(path);
 	if (texture->IsLoadSuccess()) {
-		textureMap.insert({ channel, texture });
+		textures.push_back(texture);
 		return texture;
 	}
+	delete texture;
 	return nullptr;
 }
 
@@ -193,31 +194,6 @@ void Scene::Unload()
 	}
 }
 
-void Scene::InitMaterialTextures() {
-
-	auto mats = GetAllMaterials();
-	auto textures = GetTextureMap();
-	if (mats.size() == 0) {
-		return;
-	}
-	if (textures.size() == 0) {
-		return;
-	}
-
-	for (Material* mat : mats) {
-		mat->Use();
-		for (const auto& [textChannel, texture] : textures) {
-			if (textChannel == GL_TEXTURE0) {
-				mat->SetTextureSampler("material.texture_diffuse1", 0);
-			}
-			else if (textChannel == GL_TEXTURE1) {
-				mat->SetTextureSampler("material.texture_specular1", 1);
-			}
-		}
-	}
-}
-
-
 Scene::~Scene()
 {
 	for (auto iter = materials.begin(); iter != materials.end(); iter++) {
@@ -226,10 +202,9 @@ Scene::~Scene()
 	}
 	materials.clear();
 
-	for (auto iter = textureMap.begin(); iter != textureMap.end(); iter++) {
-		delete (*iter).second;
+	for (auto iter = textures.begin(); iter != textures.end(); iter++) {
+		delete (*iter);
 	}
-	textureMap.clear();
 
 	for (auto& light : dirLights) {
 		delete light;

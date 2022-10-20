@@ -79,9 +79,29 @@ GLuint Material::GetObject() const
     return object;
 }
 
-void Material::SetTextureSampler(const std::string key, int val) const
+void Material::ReadyTextures() const{
+    for (const auto& [textChannel, texture] : textureMap) {
+        texture->AddToPipeline(textChannel);
+    }
+}
+
+void Material::SetTexture(const std::string key, GLint textureChannel, Texture * texture)
 {
-    SetInt(key, val);
+    this->Use();
+    if (textureChannel == GL_TEXTURE0) {
+        SetInt(key, 0);
+    }
+    else if (textureChannel == GL_TEXTURE1) {
+        SetInt(key, 1);
+    }
+    else if (textureChannel == GL_TEXTURE2) {
+        SetInt(key, 2);
+    }
+    else if (textureChannel == GL_TEXTURE3) {
+        SetInt(key, 3);
+    }
+    textureMap.insert({ textureChannel, texture });
+    this->StopUsing();
 }
 
 void Material::SetBool(const std::string key, bool val) const

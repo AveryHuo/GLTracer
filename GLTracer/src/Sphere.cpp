@@ -143,6 +143,9 @@ void Sphere::draw()
 {
     if(!isInit)
         return;
+
+    if (bindMaterial)
+        bindMaterial->ReadyTextures();
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, getIndexCount(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
