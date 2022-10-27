@@ -119,7 +119,11 @@ vec3 CalcEnvColor(vec3 i, vec3 n)
 {
     // vec3 I = normalize(Position - cameraPos);
 
-    vec3 R = reflect(i, normalize(n));
+    // vec3 R = reflect(i, normalize(n));
+    // return texture(material.envmap, R).rgb;
+
+    float ratio = 1.00 / 1.52;
+    vec3 R = refract(-i, normalize(n), ratio);
     return texture(material.envmap, R).rgb;
 }
 
@@ -134,7 +138,7 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 
     // combine results
-    vec3 env = CalcEnvColor(lightDir, normal);
+    vec3 env = CalcEnvColor(lightDir, normal) * 0.1;
     vec3 ambient = light.ambient * vec3(texture(material.texture_diffuse1, TexCoord));
     vec3 diffuse = light.diffuse * diff * vec3(texture(material.texture_diffuse1, TexCoord));
     vec3 specular = light.specular * spec * vec3(texture(material.texture_specular1, TexCoord));
