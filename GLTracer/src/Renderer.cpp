@@ -331,6 +331,16 @@ void Renderer::Draw()
 		i++;
 	}
 
+	auto skybox = scene->GetSkybox();
+	if (skybox != nullptr) {
+		auto mat = skybox->GetMaterial();
+		mat->Use();
+		mat->SetMatrix4("view", 1, GL_FALSE, glm::mat4(glm::mat3(view)));
+		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
+		skybox->draw();
+		mat->StopUsing();
+	}
+
 }
 
 Renderer::~Renderer()

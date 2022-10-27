@@ -85,6 +85,12 @@ void Material::ReadyTextures() const{
     }
 }
 
+void Material::ReadyCubemaps() const {
+    for (const auto& [textChannel, cubemap] : cubemapMap) {
+        cubemap->AddToPipeline(textChannel);
+    }
+}
+
 void Material::SetTexture(const std::string key, GLint textureChannel, Texture * texture)
 {
     this->Use();
@@ -101,6 +107,25 @@ void Material::SetTexture(const std::string key, GLint textureChannel, Texture *
         SetInt(key, 3);
     }
     textureMap.insert({ textureChannel, texture });
+    this->StopUsing();
+}
+
+void Material::SetCubemap(const std::string key, GLint channel, Cubemap *cubemap)
+{
+    this->Use();
+    if (channel == GL_TEXTURE0) {
+        SetInt(key, 0);
+    }
+    else if (channel == GL_TEXTURE1) {
+        SetInt(key, 1);
+    }
+    else if (channel == GL_TEXTURE2) {
+        SetInt(key, 2);
+    }
+    else if (channel == GL_TEXTURE3) {
+        SetInt(key, 3);
+    }
+    cubemapMap.insert({ channel, cubemap });
     this->StopUsing();
 }
 

@@ -138,16 +138,21 @@ void MainLoop(GLFWwindow* window) {
 
 void InitRender() {
 	scene = new Scene();
+	
 	scene->SetSceneSize(SCR_WIDTH, SCR_HEIGHT);
-	auto texture1 = scene->AddTexture(resDir + std::string("block.jpg"));
-	auto texture2 = scene->AddTexture(resDir + std::string("over.png"));
+
+	scene->AddSkybox(resDir + std::string("Cubemaps/skybox1"));
+	
+	auto texture1 = scene->AddTexture(resDir + std::string("Images/block.jpg"));
+	auto texture2 = scene->AddTexture(resDir + std::string("Images/over.png"));
 
 	auto mat1 = scene->AddMaterial("vec", "frag");
 	auto mat2 = scene->AddMaterial("vec_2", "frag_2");
 	auto mat3 = scene->AddMaterial("vec_3_viewspace", "frag_3_viewspace");
-	mat4 = scene->AddMaterial("vec_struct", "frag_struct");
+	mat4 = scene->AddMaterial("vec_struct_envmap", "frag_struct_envmap");
 	mat4->SetTexture("material.texture_diffuse1", GL_TEXTURE0, texture1);
 	mat4->SetTexture("material.texture_specular1", GL_TEXTURE1, texture2);
+	mat4->SetCubemap("material.envmap", GL_TEXTURE2, scene->GetCubemaps()[0]);
 
 	auto mat41 = scene->AddMaterial("vec_struct", "frag_struct");
 	mat41->SetTexture("material.texture_diffuse1", GL_TEXTURE0, texture2);
@@ -176,10 +181,10 @@ void InitRender() {
 	scene->AddBox(glm::vec3(0.0f, -1.8f, -10.0f), mat41);
 	scene->AddSphere(glm::vec3(-1.0f, -1.8f, -2.0f), mat41);
 	scene->AddCylinder(glm::vec3(-2.0f, -1.8f, -2.0f), mat41);
-	scene->AddQuad(glm::vec3(0.0f, -2.5f, -10.0f), mat4);
-	auto model1 = scene->AddModel(resDir + std::string("CoffeeCart_01_4k.gltf"), glm::vec3(0.0f, -2.5f, -10.0f), mat4);
+	scene->AddQuad(glm::vec3(0.0f, -2.5f, -10.0f), mat41);
+	auto model1 = scene->AddModel(resDir + std::string("Models/CoffeeCart/CoffeeCart_01_4k.gltf"), glm::vec3(0.0f, -2.5f, -10.0f), mat4);
 	model1->ChangeScale(glm::vec3(4.1f));
-	auto model2 = scene->AddModel(resDir + std::string("CoffeeCart_01_4k.gltf"), glm::vec3(0.0f, -2.5f, -10.0f), mat5);
+	auto model2 = scene->AddModel(resDir + std::string("Models/CoffeeCart/CoffeeCart_01_4k.gltf"), glm::vec3(0.0f, -2.5f, -10.0f), mat5);
 	model2->ChangeScale(glm::vec3(4.15f));
 
 	/*Model *m = new Model(resDir+std::string("CoffeeCart_01_4k.gltf"));
@@ -239,6 +244,9 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_STENCIL_TEST);
+
+	/*glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);*/
 	
 	/*
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);*/

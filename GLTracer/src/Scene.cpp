@@ -123,6 +123,31 @@ Camera* Scene::AddCamera(const float speed, bool isMainCamera)
 	return cam;
 }
 
+Cubemap* Scene::AddCubemap(const std::string path) {
+	Cubemap *cm = new Cubemap(path);
+	cubemaps.push_back(cm);
+	return cm;
+}
+
+Skybox* Scene::AddSkybox(const std::string path) {
+	auto cubemap = AddCubemap(path);
+	if (cubemap == nullptr) {
+		return nullptr;
+	}
+	Material * mat = nullptr;
+	if (skybox != nullptr) {
+		mat = skybox->GetMaterial();
+		delete skybox;
+	}
+	if (mat == nullptr) {
+		mat = AddMaterial(SKYBOX_VERTEX_SHADER, SKYBOX_FRAGMENT_SHADER);
+	}
+	skybox = new Skybox();
+	skybox->SetMaterial(mat);
+	mat->SetCubemap("skybox", GL_TEXTURE0, cubemap);
+	return skybox;
+}
+
 void Scene::Reload() {
 	this->Unload();
 	this->Load();
@@ -159,6 +184,7 @@ void Scene::Load()
 	for (auto& model : models) {
 		model->init();
 	}
+	skybox->init();
 }
 
 void Scene::Unload()
@@ -192,6 +218,7 @@ void Scene::Unload()
 	for (auto& model : models) {
 		model->unInit();
 	}
+	skybox->unInit();
 }
 
 Scene::~Scene()

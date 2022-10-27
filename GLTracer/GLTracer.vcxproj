@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClCompile Include="..\libs\glad\src\glad.c" />
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Cubemap.cpp" />
     <ClCompile Include="src\Cylinder.cpp" />
     <ClCompile Include="src\imgui\imgui.cpp" />
     <ClCompile Include="src\imgui\imgui_demo.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="src\BaseModel.h" />
     <ClInclude Include="src\Box.h" />
     <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\Cubemap.h" />
     <ClInclude Include="src\Cylinder.h" />
     <ClInclude Include="src\DataUtils.h" />
     <ClInclude Include="src\DirectionLight.h" />
@@ -182,6 +184,7 @@
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\ShaderIncludes.h" />
+    <ClInclude Include="src\Skybox.h" />
     <ClInclude Include="src\Sphere.h" />
     <ClInclude Include="src\SpotLight.h" />
     <ClInclude Include="src\stb_image.h" />
