@@ -119,12 +119,12 @@ vec3 CalcEnvColor(vec3 i, vec3 n)
 {
     // vec3 I = normalize(Position - cameraPos);
 
-    // vec3 R = reflect(i, normalize(n));
-    // return texture(material.envmap, R).rgb;
-
-    float ratio = 1.00 / 1.52;
-    vec3 R = refract(-i, normalize(n), ratio);
+    vec3 R = reflect(-i, normalize(n));
     return texture(material.envmap, R).rgb;
+
+    // float ratio = 1.00 / 1.52;
+    // vec3 R = refract(-i, normalize(n), ratio);
+    // return texture(material.envmap, R).rgb;
 }
 
 // calculates the color when using a directional light.
@@ -142,7 +142,12 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
     vec3 ambient = light.ambient * vec3(texture(material.texture_diffuse1, TexCoord));
     vec3 diffuse = light.diffuse * diff * vec3(texture(material.texture_diffuse1, TexCoord));
     vec3 specular = light.specular * spec * vec3(texture(material.texture_specular1, TexCoord));
-    return (env + ambient + diffuse + specular);
+    if (gl_FragCoord.x > 400){
+        return (ambient + diffuse + specular);
+    }else{
+        return (env + ambient + diffuse + specular);
+    }
+    
 }
 
 // calculates the color when using a point light.
@@ -166,7 +171,12 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;
-    return (env + ambient + diffuse + specular);
+    if (gl_FragCoord.x > 400){
+        return (ambient + diffuse + specular);
+    }else{
+        return (env + ambient + diffuse + specular);
+    }
+    
 }
 
 // calculates the color when using a spot light.
@@ -194,5 +204,10 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     ambient *= attenuation * intensity;
     diffuse *= attenuation * intensity;
     specular *= attenuation * intensity;
-    return (env + ambient + diffuse + specular);
+     if (gl_FragCoord.x > 400){
+        return (ambient + diffuse + specular);
+    }else{
+        return (env + ambient + diffuse + specular);
+    }
+    
 }

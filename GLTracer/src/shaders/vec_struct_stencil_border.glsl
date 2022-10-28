@@ -4,6 +4,11 @@ layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoord;
 layout (location = 3) in vec2 aTangent;
 layout (location = 4) in vec2 aBitangent;
+layout (std140) uniform Matrices
+{
+    mat4 projection;
+    mat4 view;
+};
 
 out vec2 TexCoord;
 out vec3 FragPos;
@@ -11,8 +16,6 @@ out vec3 Normal;
 out vec3 Tangent;
 out vec3 Bitangent;
 
-uniform mat4 view;
-uniform mat4 projection;
 uniform mat4 model;
 
 uniform vec3 lightPos; 

@@ -12,7 +12,7 @@ class Renderer
 {
 protected:
 	Scene* scene;
-
+	GLuint uboMatrices = 0;
 	bool inputFirstMouse = true;
 	float inputLastX = 1.0f;
 	float inputLastY = 1.0f; 

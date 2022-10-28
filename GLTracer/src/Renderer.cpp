@@ -21,7 +21,19 @@ void Renderer::LoadScene() {
 }
 
 void Renderer::Ready() {
-	
+
+	//Bind Camera
+	for (auto& mat : scene->GetAllMaterials()) {
+		auto uniformBlockIndex = glGetUniformBlockIndex(mat->GetObject(), "Matrices");
+		glUniformBlockBinding(mat->GetObject(), uniformBlockIndex, 0);
+	}
+	// create the buffer
+	glGenBuffers(1, &uboMatrices);
+	glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	// define the range of the buffer that links to a uniform binding point
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4));
 }
 
 
@@ -135,8 +147,6 @@ void Renderer::WindowMouseInputCallBack(GLFWwindow* window, double xpos, double 
 		pos.y += yoffset;
 		scene->GetMainCamera()->SetCameraPos(pos);
 	}
-
-	
 }
 
 void Renderer::WindowMouseScrollInputCallBack(GLFWwindow* window, double xoffset, double yoffset)
@@ -175,18 +185,19 @@ void Renderer::Draw()
 	//glDepthMask(GL_FALSE);//关闭深度写入常常会用来渲染透明片元。 关闭时无法写入深度测试缓存区。
 	//glDepthFunc(GL_LESS);
 
-	glm::mat4 view = glm::mat4(1.0f);
-	view = glm::translate(view, glm::vec3(0, 0, -3));
-	// Fixed Y, move camera X and Z
-	view = mainCamera->GetViewMatrix();
+	glm::mat4 view = mainCamera->GetViewMatrix();
 	glm::mat4 proj = mainCamera->GetProjectMatrix();
+
+	//Only need to set once!
+	glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(proj));
+	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	for (auto& light : scene->GetDirLights()) {
 		auto mat = light->GetMaterial();
 		if (mat != nullptr) {
 			mat->Use();
-			mat->SetMatrix4("view", 1, GL_FALSE, view);
-			mat->SetMatrix4("projection", 1, GL_FALSE, proj);
 			mat->SetMatrix4("model", 1, GL_FALSE, light->GetTransform());
 			light->draw();
 			mat->StopUsing();
@@ -195,8 +206,6 @@ void Renderer::Draw()
 	for (auto& light : scene->GetPointLights()) {
 		auto mat = light->GetMaterial();
 		mat->Use();
-		mat->SetMatrix4("view", 1, GL_FALSE, view);
-		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
 		mat->SetMatrix4("model", 1, GL_FALSE, light->GetTransform());
 		light->draw();
 		mat->StopUsing();
@@ -204,8 +213,6 @@ void Renderer::Draw()
 	for (auto& light : scene->GetSpotLights()) {
 		auto mat = light->GetMaterial();
 		mat->Use();
-		mat->SetMatrix4("view", 1, GL_FALSE, view);
-		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
 		mat->SetMatrix4("model", 1, GL_FALSE, light->GetTransform());
 		light->draw();
 		mat->StopUsing();
@@ -223,8 +230,6 @@ void Renderer::Draw()
 		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
 
 		mat->SetFloat("mixValue", materialValue1);
-		mat->SetMatrix4("view", 1, GL_FALSE, view);
-		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
 
 		//box->ChangeScale(glm::vec3(1));
 		box->ChangeRot((float)glfwGetTime() * 25.0f, glm::vec3(0, 1, 0));
@@ -243,8 +248,6 @@ void Renderer::Draw()
 		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
 
 		mat->SetFloat("mixValue", materialValue1);
-		mat->SetMatrix4("view", 1, GL_FALSE, view);
-		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
 
 		sphere->ChangeScale(glm::vec3(1));
 		sphere->ChangeRot((float)glfwGetTime() * 25.0f, glm::vec3(0, 1, 0));
@@ -263,8 +266,6 @@ void Renderer::Draw()
 		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
 
 		mat->SetFloat("mixValue", materialValue1);
-		mat->SetMatrix4("view", 1, GL_FALSE, view);
-		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
 
 		cylinder->ChangeScale(glm::vec3(1));
 		cylinder->ChangeRot((float)glfwGetTime() * 25.0f, glm::vec3(0, 1, 0));
@@ -283,8 +284,6 @@ void Renderer::Draw()
 		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
 
 		mat->SetFloat("mixValue", materialValue1);
-		mat->SetMatrix4("view", 1, GL_FALSE, view);
-		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
 
 		quad->ChangeScale(glm::vec3(8));
 		//quad->ChangeRot(-90.0f, glm::vec3(1, 0, 0));
@@ -316,8 +315,6 @@ void Renderer::Draw()
 		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
 
 		mat->SetFloat("mixValue", materialValue1);
-		mat->SetMatrix4("view", 1, GL_FALSE, view);
-		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
 
 		//model->ChangeScale(glm::vec3(4));
 		//quad->ChangeRot(-90.0f, glm::vec3(1, 0, 0));
@@ -335,8 +332,8 @@ void Renderer::Draw()
 	if (skybox != nullptr) {
 		auto mat = skybox->GetMaterial();
 		mat->Use();
-		mat->SetMatrix4("view", 1, GL_FALSE, glm::mat4(glm::mat3(view)));
 		mat->SetMatrix4("projection", 1, GL_FALSE, proj);
+		mat->SetMatrix4("view", 1, GL_FALSE, glm::mat4(glm::mat3(view)));
 		skybox->draw();
 		mat->StopUsing();
 	}

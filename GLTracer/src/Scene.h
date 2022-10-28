@@ -22,6 +22,8 @@ private:
 	const std::string SKYBOX_VERTEX_SHADER = "skybox_vertex_shader";
 	const std::string SKYBOX_FRAGMENT_SHADER = "skybox_fragment_shader";
 	//TODO: Consider to move all of this resources to a manager? get instance from manager
+
+	GLuint uboMatrices;
 	std::vector<Material*> materials;
 	std::vector<Cubemap*> cubemaps;
 	std::vector<Texture*> textures;
