@@ -29,7 +29,7 @@ void Mesh::Draw(Material& material)
 			number = std::to_string(normalNr++); // transfer unsigned int to string
 		else if (name == "texture_height")
 			number = std::to_string(heightNr++); // transfer unsigned int to string
-		material.SetInt(("material." + name + number).c_str(), i);
+		material.SetFloat(("material." + name + number).c_str(), i);//don't change it to int!!! may cause can not render
 		glBindTexture(GL_TEXTURE_2D, textures[i]->GetObject());
 	}
 	material.ReadyCubemaps();

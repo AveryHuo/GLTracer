@@ -296,7 +296,7 @@ void Renderer::Draw()
 		//Set all stencil to 1, and draw only when 1&0xFF
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		glStencilMask(0xFF);//allow write
-		model->ChangeScale(glm::vec3(5.0f));
+		model->ChangeScale(glm::vec3(0.2f));
 		auto mat = model->GetMaterial();
 		mat->Use();
 		MaterialHelper::AddLightsToMaterial(scene, mat);
@@ -311,7 +311,7 @@ void Renderer::Draw()
 		glStencilFunc(GL_ALWAYS, 0, 0xFF);
 
 		//Set all stencil to 0, and draw only not 1&0xFF
-		model->ChangeScale(glm::vec3(5.5f));
+		model->ChangeScale(glm::vec3(0.2005f));
 		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 		glStencilMask(0x00);//disallow write to stencil
 		auto mat2 = model->GetMaterial2();

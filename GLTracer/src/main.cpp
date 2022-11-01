@@ -183,8 +183,8 @@ void InitRender() {
 	scene->AddCylinder(glm::vec3(-2.0f, -1.8f, -2.0f), mat41);
 	scene->AddQuad(glm::vec3(0.0f, -2.5f, -10.0f), mat41);
 	//auto model1 = scene->AddModel(resDir + std::string("Models/CoffeeCart/CoffeeCart_01_4k.gltf"), glm::vec3(0.0f, -2.5f, -10.0f), mat4);
-	auto model1 = scene->AddModelWithTwoMat(resDir + std::string("Models/CoffeeCart/CoffeeCart_01_4k.gltf"), glm::vec3(0.0f, -2.5f, -10.0f), mat4, mat5);
-	//auto model1 = scene->AddModelWithTwoMat(resDir + std::string("Models/nanosuit/nanosuit.obj"), glm::vec3(0.0f, -2.5f, -10.0f), mat4, mat5);
+	//auto model1 = scene->AddModelWithTwoMat(resDir + std::string("Models/CoffeeCart/CoffeeCart_01_4k.gltf"), glm::vec3(0.0f, -2.5f, -10.0f), mat4, mat5);
+	auto model1 = scene->AddModelWithTwoMat(resDir + std::string("Models/nanosuit/nanosuit.obj"), glm::vec3(0.0f, -2.5f, -10.0f), mat4, mat5);
 	
 	
 	/*auto mat_geo = scene->AddMaterial("vec_geometrytest_1", "frag_geometrytest_1", "geo_geometrytest_1");
