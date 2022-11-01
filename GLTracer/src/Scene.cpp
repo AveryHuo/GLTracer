@@ -179,6 +179,11 @@ Skybox* Scene::AddSkybox(const std::string path) {
 	return skybox;
 }
 
+AsterionField* Scene::AddAsterionField(const std::string& rockPath, const std::string& planetPath) {
+	asterionField = new AsterionField(rockPath, planetPath);
+	return asterionField;
+}
+
 void Scene::Reload() {
 	this->Unload();
 	this->Load();
@@ -222,6 +227,9 @@ void Scene::Load()
 
 	if(skybox)
 		skybox->init();
+
+	if(asterionField)
+		asterionField->init();
 }
 
 void Scene::Unload()
@@ -262,6 +270,9 @@ void Scene::Unload()
 
 	if (skybox)
 		skybox->unInit();
+
+	if (asterionField)
+		asterionField->unInit();
 }
 
 Scene::~Scene()
@@ -323,4 +334,10 @@ Scene::~Scene()
 		delete (*iter);
 	}
 	cameras.clear();
+
+	if(skybox)
+		delete skybox;
+
+	if(asterionField)
+		delete asterionField;
 }

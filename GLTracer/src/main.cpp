@@ -191,6 +191,7 @@ void InitRender() {
 	auto mat_geo = scene->AddMaterial("vec_geometrytest_1", "frag_geometrytest_1", "geo_geometrytest_1");
 	scene->AddCustomModel(mat_geo);
 
+	scene->AddAsterionField(resDir + std::string("Models/rock/rock.obj"), resDir + std::string("Models/planet/planet.obj"));
 	/*Model *m = new Model(resDir+std::string("CoffeeCart_01_4k.gltf"));
 	*/
 	//scene->AddBox(glm::vec3(0.0f, 0.0f, 0.0f), *mat1);

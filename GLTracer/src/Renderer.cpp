@@ -345,6 +345,14 @@ void Renderer::Draw()
 		mat->StopUsing();
 	}
 
+	auto af = scene->GetAsterionField();
+	if (af) {
+		af->SetProjection(proj);
+		af->SetView(view);
+
+		af->draw();
+	}
+
 	auto skybox = scene->GetSkybox();
 	if (skybox != nullptr) {
 		auto mat = skybox->GetMaterial();

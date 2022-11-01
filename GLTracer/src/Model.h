@@ -21,6 +21,8 @@ public:
 	void unInit() override{};
 	void draw() override;
 	void draw(Material & mat);
+	std::vector<Mesh> GetMeshes(){return meshes;};
+	std::vector<Texture*> GetLoadedTextures(){return textures_loaded;};
 private:
 	std::vector<Texture *> textures_loaded;
 	// model data

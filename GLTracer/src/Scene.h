@@ -16,6 +16,7 @@
 #include "Model.h"
 #include "Skybox.h"
 #include "CustomModel.h"
+#include "AsterionField.h"
 
 class Scene
 {
@@ -37,6 +38,8 @@ private:
 	std::vector<DirectionLight*> dirLights;
 	std::vector<SpotLight*> spotLights;
 	std::vector<PointLight*> pointLights;
+	
+	AsterionField *asterionField = nullptr;
 	Camera* mainCamera = nullptr;
 	std::vector<Camera*> cameras;
 	Skybox *skybox;
@@ -61,6 +64,7 @@ public:
 	std::vector<CustomModel*> GetCustomModels() { return customModels; };
 	Camera* GetMainCamera() const { return mainCamera; };
 	Skybox* GetSkybox() const {return skybox;};
+	AsterionField *GetAsterionField() const {return asterionField;};
 	
 	DirectionLight* AddDirectionLight(glm::vec3 initPos);
 	SpotLight* AddSpotLight(glm::vec3 initPos);
@@ -70,6 +74,7 @@ public:
 	Cylinder* AddCylinder(glm::vec3 initPos, Material* material);
 	Quad* AddQuad(glm::vec3 initPos, Material* material);
 	Model* AddModel(std::string path, glm::vec3 initPos, Material* material);
+	Model* Add(std::string path, glm::vec3 initPos, Material* material);
 	Model* AddModelWithTwoMat(std::string path, glm::vec3 initPos, Material* material1, Material* material2);
 	Model* AddModelWithThreeMat(std::string path, glm::vec3 initPos, Material* material1, Material* material2, Material* material3);
 	CustomModel* AddCustomModel(Material* material);
@@ -78,6 +83,7 @@ public:
 	Material* AddMaterial(const std::string vertShaderName, const std::string fragShaderName, const std::string geometryShaderName = "");
 	Camera* AddCamera(const float speed, const bool isMainCamera);
 	Skybox* AddSkybox(const std::string path);
+	AsterionField* AddAsterionField(const std::string& rockPath, const std::string& planetPath);
 
 	void Reload();
 	void Load();
