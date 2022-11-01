@@ -11,6 +11,7 @@ class BaseModel
 protected:
     Material *bindMaterial;
     Material* bindMaterial2;
+    Material* bindMaterial3;
     GLuint vao;
     glm::vec3 scale;
     glm::vec3 pos;
@@ -22,6 +23,7 @@ public:
     BaseModel() {
         this->bindMaterial = nullptr;
         this->bindMaterial2 = nullptr;
+        this->bindMaterial3 = nullptr;
         this->vao = 0;
         this->scale = glm::vec3(1);
         this->pos = glm::vec3(0);
@@ -29,7 +31,7 @@ public:
         this->rotAngle = 0;
         this->isInit = false;
     };
-    BaseModel(glm::vec3 pos, float rotAngle, glm::vec3 rotBase): isInit(false), vao(0), scale(glm::vec3(1)), pos(pos), rotAngle(rotAngle), rotBase(rotBase), bindMaterial(nullptr), bindMaterial2(nullptr) {}
+    BaseModel(glm::vec3 pos, float rotAngle, glm::vec3 rotBase): isInit(false), vao(0), scale(glm::vec3(1)), pos(pos), rotAngle(rotAngle), rotBase(rotBase), bindMaterial(nullptr), bindMaterial2(nullptr), bindMaterial3(nullptr) {}
     const glm::vec3 GetPos() const { return pos; };
     const glm::vec3 GetScale() const { return scale; };
     void ChangeScale(glm::vec3 scale) { this->scale = scale; };
@@ -56,6 +58,12 @@ public:
     }
     Material* GetMaterial2() const {
         return bindMaterial2;
+    }
+    void SetMaterial3(Material* mat) {
+        bindMaterial3 = mat;
+    }
+    Material* GetMaterial3() const {
+        return bindMaterial3;
     }
     virtual void init() = 0;
     virtual void unInit() = 0;

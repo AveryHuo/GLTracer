@@ -100,6 +100,17 @@ Model* Scene::AddModelWithTwoMat(std::string path, glm::vec3 initPos, Material* 
 	return models[models.size() - 1];
 }
 
+Model* Scene::AddModelWithThreeMat(std::string path, glm::vec3 initPos, Material* material1, Material* material2, Material* material3)
+{
+	Model* m = new Model(path);
+	m->ChangePos(initPos);
+	m->SetMaterial(material1);
+	m->SetMaterial2(material2);
+	m->SetMaterial3(material3);
+	models.push_back(m);
+	return models[models.size() - 1];
+}
+
 CustomModel* Scene::AddCustomModel(Material* material)
 {
 	CustomModel *m = new CustomModel();

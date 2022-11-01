@@ -310,23 +310,32 @@ void Renderer::Draw()
 		glStencilMask(0xFF);
 		glStencilFunc(GL_ALWAYS, 0, 0xFF);
 
-		//Set all stencil to 0, and draw only not 1&0xFF
-		model->ChangeScale(glm::vec3(0.2005f));
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-		glStencilMask(0x00);//disallow write to stencil
-		auto mat2 = model->GetMaterial2();
-		mat2->Use();
-		MaterialHelper::AddLightsToMaterial(scene, mat2);
-		mat2->SetBool("useNormalMap", false);
-		mat2->SetFloat("material.shininess", 32.0f);
-		mat2->SetVector3("viewPos", mainCamera->GetCameraPos());
-		mat2->SetFloat("mixValue", materialValue1);
-		mat2->SetMatrix4("model", 1, GL_FALSE, model->GetTransform());
-		model->draw(*mat2);
-		mat2->StopUsing();
+		if (auto mat2 = model->GetMaterial2()) {
+			//Set all stencil to 0, and draw only not 1&0xFF
+			model->ChangeScale(glm::vec3(0.2005f));
+			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+			glStencilMask(0x00);//disallow write to stencil
+			mat2->Use();
+			MaterialHelper::AddLightsToMaterial(scene, mat2);
+			mat2->SetBool("useNormalMap", false);
+			mat2->SetFloat("material.shininess", 32.0f);
+			mat2->SetVector3("viewPos", mainCamera->GetCameraPos());
+			mat2->SetFloat("mixValue", materialValue1);
+			mat2->SetMatrix4("model", 1, GL_FALSE, model->GetTransform());
+			model->draw(*mat2);
+			mat2->StopUsing();
+			glStencilMask(0xFF);
+			glStencilFunc(GL_ALWAYS, 0, 0xFF);
+		}
+		
+		if (auto mat3 = model->GetMaterial3()) {
+			model->ChangeScale(glm::vec3(0.2f));
+			mat3->Use();
+			mat3->SetMatrix4("model", 1, GL_FALSE, model->GetTransform());
+			model->draw(*mat3);
+			mat3->StopUsing();
+		}
 
-		glStencilMask(0xFF);
-		glStencilFunc(GL_ALWAYS, 0, 0xFF);
 	}
 
 	for (auto& model : scene->GetCustomModels()) {

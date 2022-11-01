@@ -71,6 +71,7 @@ public:
 	Quad* AddQuad(glm::vec3 initPos, Material* material);
 	Model* AddModel(std::string path, glm::vec3 initPos, Material* material);
 	Model* AddModelWithTwoMat(std::string path, glm::vec3 initPos, Material* material1, Material* material2);
+	Model* AddModelWithThreeMat(std::string path, glm::vec3 initPos, Material* material1, Material* material2, Material* material3);
 	CustomModel* AddCustomModel(Material* material);
 	Cubemap* AddCubemap(const std::string path);
 	Texture* AddTexture(const std::string path);
