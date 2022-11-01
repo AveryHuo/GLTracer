@@ -186,9 +186,8 @@ void InitRender() {
 	//auto model1 = scene->AddModelWithTwoMat(resDir + std::string("Models/CoffeeCart/CoffeeCart_01_4k.gltf"), glm::vec3(0.0f, -2.5f, -10.0f), mat4, mat5);
 	auto model1 = scene->AddModelWithTwoMat(resDir + std::string("Models/nanosuit/nanosuit.obj"), glm::vec3(0.0f, -2.5f, -10.0f), mat4, mat5);
 	
-	
-	/*auto mat_geo = scene->AddMaterial("vec_geometrytest_1", "frag_geometrytest_1", "geo_geometrytest_1");
-	scene->AddCustomModel(mat_geo);*/
+	auto mat_geo = scene->AddMaterial("vec_geometrytest_1", "frag_geometrytest_1", "geo_geometrytest_1");
+	scene->AddCustomModel(mat_geo);
 
 	/*Model *m = new Model(resDir+std::string("CoffeeCart_01_4k.gltf"));
 	*/

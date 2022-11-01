@@ -204,7 +204,13 @@ void Scene::Load()
 	for (auto& model : models) {
 		model->init();
 	}
-	skybox->init();
+
+	for (auto& model : customModels) {
+		model->init();
+	}
+
+	if(skybox)
+		skybox->init();
 }
 
 void Scene::Unload()
@@ -238,7 +244,13 @@ void Scene::Unload()
 	for (auto& model : models) {
 		model->unInit();
 	}
-	skybox->unInit();
+
+	for (auto& model : customModels) {
+		model->unInit();
+	}
+
+	if (skybox)
+		skybox->unInit();
 }
 
 Scene::~Scene()
@@ -280,6 +292,10 @@ Scene::~Scene()
 	}
 
 	for (auto& model : models) {
+		delete model;
+	}
+
+	for (auto& model : customModels) {
 		delete model;
 	}
 

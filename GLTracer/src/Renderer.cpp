@@ -329,12 +329,12 @@ void Renderer::Draw()
 		glStencilFunc(GL_ALWAYS, 0, 0xFF);
 	}
 
-	//for (auto& model : scene->GetCustomModels()) {
-	//	auto mat = model->GetMaterial();
-	//	mat->Use();
-	//	model->draw();
-	//	mat->StopUsing();
-	//}
+	for (auto& model : scene->GetCustomModels()) {
+		auto mat = model->GetMaterial();
+		mat->Use();
+		model->draw();
+		mat->StopUsing();
+	}
 
 	auto skybox = scene->GetSkybox();
 	if (skybox != nullptr) {
