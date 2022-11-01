@@ -20,6 +20,7 @@ public:
 	void init() override {};
 	void unInit() override{};
 	void draw() override;
+	void draw(Material & mat);
 private:
 	std::vector<Texture *> textures_loaded;
 	// model data

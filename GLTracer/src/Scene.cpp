@@ -90,6 +90,24 @@ Model* Scene::AddModel(std::string path, glm::vec3 initPos, Material* material)
 	return models[models.size() - 1];
 }
 
+Model* Scene::AddModelWithTwoMat(std::string path, glm::vec3 initPos, Material* material1, Material* material2)
+{
+	Model* m = new Model(path);
+	m->ChangePos(initPos);
+	m->SetMaterial(material1);
+	m->SetMaterial2(material2);
+	models.push_back(m);
+	return models[models.size() - 1];
+}
+
+CustomModel* Scene::AddCustomModel(Material* material)
+{
+	CustomModel *m = new CustomModel();
+	m->SetMaterial(material);
+	customModels.push_back(m);
+	return customModels[customModels.size() - 1];
+}
+
 Texture *Scene::AddTexture(const std::string path)
 {
 	Texture* texture = new Texture(path);
@@ -101,12 +119,14 @@ Texture *Scene::AddTexture(const std::string path)
 	return nullptr;
 }
 
-Material* Scene::AddMaterial(const std::string vertShaderName, const std::string fragShaderName)
+Material* Scene::AddMaterial(const std::string vertShaderName, const std::string fragShaderName, const std::string geometryShaderName)
 {
 	Material* ret = new Material();
 	ret->CreateInstance();
-	ret->AttachVertexShaderByName(vertShaderName);
-	ret->AttachFragmentShaderByName(fragShaderName);
+	ret->AttachShaderByName(vertShaderName, GL_VERTEX_SHADER);
+	if (geometryShaderName != "")
+		ret->AttachShaderByName(geometryShaderName, GL_GEOMETRY_SHADER);
+	ret->AttachShaderByName(fragShaderName, GL_FRAGMENT_SHADER);
 	materials.push_back(ret);
 	return ret;
 }

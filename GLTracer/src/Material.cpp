@@ -39,29 +39,17 @@ Shader* Material::GenerateShaderInstance(const std::string path, GLenum shaderTy
     return new Shader(vecShaderSource, shaderType);
 }
 
-void Material::AttachVertexShaderByName(const std::string shaderName) {
-    AttachVertexShaderByPath(DEFAULT_SHADER_DIR + shaderName + ".glsl");
+void Material::AttachShaderByName(const std::string shaderName, GLenum shaderType) {
+    AttachShaderByPath(DEFAULT_SHADER_DIR + shaderName + ".glsl", shaderType);
 }
 
-void Material::AttachVertexShaderByPath(const std::string shaderPath) {
-    auto vertShader = GenerateShaderInstance(shaderPath, GL_VERTEX_SHADER);
-    glAttachShader(object, vertShader->getObject());
+void Material::AttachShaderByPath(const std::string shaderPath, GLenum shaderType) {
+    auto shader = GenerateShaderInstance(shaderPath, shaderType);
+    glAttachShader(object, shader->getObject());
     glLinkProgram(object);
 
     CheckResult();
-    delete vertShader;
-}
-
-void Material::AttachFragmentShaderByName(const std::string shaderName) {
-    AttachFragmentShaderByPath(DEFAULT_SHADER_DIR + shaderName + ".glsl");
-}
-void Material::AttachFragmentShaderByPath(const std::string shaderPath) {
-    auto fragShader = GenerateShaderInstance(shaderPath, GL_FRAGMENT_SHADER);
-    glAttachShader(object, fragShader->getObject());
-    glLinkProgram(object);
-
-    CheckResult();
-    delete fragShader;
+    delete shader;
 }
 
 void Material::Use() const

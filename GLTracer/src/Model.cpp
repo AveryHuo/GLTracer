@@ -8,6 +8,12 @@ void Model::draw()
 		meshes[i].Draw(*bindMaterial);
 }
 
+void Model::draw(Material &mat)
+{
+	for (unsigned int i = 0; i < meshes.size(); i++)
+		meshes[i].Draw(mat);
+}
+
 void Model::loadModel(std::string path)
 {
 	Assimp::Importer importer;

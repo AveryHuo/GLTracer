@@ -15,6 +15,7 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Skybox.h"
+#include "CustomModel.h"
 
 class Scene
 {
@@ -32,6 +33,7 @@ private:
 	std::vector<Sphere*> spheres;
 	std::vector<Box*> boxes;
 	std::vector<Model*> models;
+	std::vector<CustomModel*> customModels;
 	std::vector<DirectionLight*> dirLights;
 	std::vector<SpotLight*> spotLights;
 	std::vector<PointLight*> pointLights;
@@ -56,6 +58,7 @@ public:
 	std::vector<Quad*> GetQuads() { return quads; };
 	std::vector<Model*> GetModels() { return models; };
 	std::vector<Camera*> GetCameras() { return cameras; };
+	std::vector<CustomModel*> GetCustomModels() { return customModels; };
 	Camera* GetMainCamera() const { return mainCamera; };
 	Skybox* GetSkybox() const {return skybox;};
 	
@@ -67,9 +70,11 @@ public:
 	Cylinder* AddCylinder(glm::vec3 initPos, Material* material);
 	Quad* AddQuad(glm::vec3 initPos, Material* material);
 	Model* AddModel(std::string path, glm::vec3 initPos, Material* material);
+	Model* AddModelWithTwoMat(std::string path, glm::vec3 initPos, Material* material1, Material* material2);
+	CustomModel* AddCustomModel(Material* material);
 	Cubemap* AddCubemap(const std::string path);
 	Texture* AddTexture(const std::string path);
-	Material* AddMaterial(const std::string vertShaderName, const std::string fragShaderName);
+	Material* AddMaterial(const std::string vertShaderName, const std::string fragShaderName, const std::string geometryShaderName = "");
 	Camera* AddCamera(const float speed, const bool isMainCamera);
 	Skybox* AddSkybox(const std::string path);
 

@@ -292,41 +292,49 @@ void Renderer::Draw()
 		mat->StopUsing();
 	}
 
-
-	int i = 0;
 	for (auto& model : scene->GetModels()) {
-		if (i == 0) {
-			//Set all stencil to 1, and draw only when 1&0xFF
-			glStencilFunc(GL_ALWAYS, 1, 0xFF);
-			glStencilMask(0xFF);//allow write
-		}
-		else {
-			//Set all stencil to 0, and draw only not 1&0xFF
-			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-			glStencilMask(0x00);//disallow write to stencil
-			//glDisable(GL_DEPTH_TEST); //disable , so always draw!
-		}
+		//Set all stencil to 1, and draw only when 1&0xFF
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glStencilMask(0xFF);//allow write
+		model->ChangeScale(glm::vec3(5.0f));
 		auto mat = model->GetMaterial();
 		mat->Use();
 		MaterialHelper::AddLightsToMaterial(scene, mat);
 		mat->SetBool("useNormalMap", false);
 		mat->SetFloat("material.shininess", 32.0f);
-
 		mat->SetVector3("viewPos", mainCamera->GetCameraPos());
-
 		mat->SetFloat("mixValue", materialValue1);
-
-		//model->ChangeScale(glm::vec3(4));
-		//quad->ChangeRot(-90.0f, glm::vec3(1, 0, 0));
 		mat->SetMatrix4("model", 1, GL_FALSE, model->GetTransform());
 		model->draw();
 		mat->StopUsing();
+		glStencilMask(0xFF);
+		glStencilFunc(GL_ALWAYS, 0, 0xFF);
+
+		//Set all stencil to 0, and draw only not 1&0xFF
+		model->ChangeScale(glm::vec3(5.5f));
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		glStencilMask(0x00);//disallow write to stencil
+		auto mat2 = model->GetMaterial2();
+		mat2->Use();
+		MaterialHelper::AddLightsToMaterial(scene, mat2);
+		mat2->SetBool("useNormalMap", false);
+		mat2->SetFloat("material.shininess", 32.0f);
+		mat2->SetVector3("viewPos", mainCamera->GetCameraPos());
+		mat2->SetFloat("mixValue", materialValue1);
+		mat2->SetMatrix4("model", 1, GL_FALSE, model->GetTransform());
+		model->draw(*mat2);
+		mat2->StopUsing();
 
 		glStencilMask(0xFF);
 		glStencilFunc(GL_ALWAYS, 0, 0xFF);
-		//glEnable(GL_DEPTH_TEST);
-		i++;
 	}
+
+	//for (auto& model : scene->GetCustomModels()) {
+	//	auto mat = model->GetMaterial();
+	//	mat->Use();
+	//	model->draw();
+	//	mat->StopUsing();
+	//}
 
 	auto skybox = scene->GetSkybox();
 	if (skybox != nullptr) {

@@ -16,17 +16,13 @@ private:
     std::map<int, Cubemap*> cubemapMap;
     Shader* GenerateShaderInstance(const std::string path, GLenum shaderType);
     void CheckResult() ;
-
+    bool operator < (const Material& m)const { return object < m.object; };
 public:
     void CreateInstance();
     void DestroyInstance();
 
-    bool operator < (const Material& m)const {return object < m.object;};
-
-    void AttachVertexShaderByName(const std::string shaderName);
-    void AttachVertexShaderByPath(const std::string shaderPath);
-    void AttachFragmentShaderByName(const std::string shaderName);
-    void AttachFragmentShaderByPath(const std::string shaderPath);
+    void AttachShaderByName(const std::string shaderName, GLenum shaderType);
+    void AttachShaderByPath(const std::string shaderPath, GLenum shaderType);
     void Use() const;
     void StopUsing() const;
     void ReadyTextures() const;
