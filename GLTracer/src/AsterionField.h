@@ -133,25 +133,13 @@ void draw() override {
         return;
 
     // configure transformation matrices
-    auto asteroidMaterial = rockModel->GetMaterial();
-    asteroidMaterial->Use();
-    asteroidMaterial->SetMatrix4("projection", 1, GL_FALSE, projection);
-    asteroidMaterial->SetMatrix4("view", 1, GL_FALSE, view);
-
-    auto planetMaterial = rockModel->GetMaterial();
-    planetMaterial->Use();
-    planetMaterial->SetMatrix4("projection", 1, GL_FALSE, projection);
-    planetMaterial->SetMatrix4("view", 1, GL_FALSE, view);
-
-    // draw planet
-    planetModel->ChangePos(glm::vec3(0.0f, -3.0f, -100.0f));
-    planetModel->ChangeScale(glm::vec3(1.0f, 1.0f, 1.0f));
-    planetMaterial->SetMatrix4("model", 1, GL_FALSE, planetModel->GetTransform());
-    planetModel->draw();
+    rockMaterial->Use();
+    rockMaterial->SetMatrix4("projection", 1, GL_FALSE, projection);
+    rockMaterial->SetMatrix4("view", 1, GL_FALSE, view);
 
     // draw meteorites
-    asteroidMaterial->Use();
-    asteroidMaterial->SetInt("texture_diffuse1", 0);
+    rockMaterial->Use();
+    rockMaterial->SetInt("texture_diffuse1", 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, rockModel->GetLoadedTextures()[0]->GetObject()); // note: we also made the textures_loaded vector public (instead of private) from the model class.
     auto meshes = rockModel->GetMeshes();
@@ -161,6 +149,18 @@ void draw() override {
         glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(meshes[i].indices.size()), GL_UNSIGNED_INT, 0, amount);
         glBindVertexArray(0);
     }
+    rockMaterial->StopUsing();
+
+    // draw planet
+    planetMaterial->Use();
+    planetMaterial->SetMatrix4("projection", 1, GL_FALSE, projection);
+    planetMaterial->SetMatrix4("view", 1, GL_FALSE, view);
+
+    planetModel->ChangePos(glm::vec3(0.0f, -3.0f, -10.0f));
+    planetModel->ChangeScale(glm::vec3(1.0f, 1.0f, 1.0f));
+    planetMaterial->SetMatrix4("model", 1, GL_FALSE, planetModel->GetTransform());
+    planetModel->draw();
+    planetMaterial->StopUsing();
 }
 };
 
