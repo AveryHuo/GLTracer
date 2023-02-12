@@ -54,6 +54,21 @@ Box* Scene::AddBox(glm::vec3 initPos, Material* material)
 	return boxes[boxes.size() - 1];
 }
 
+void Scene::RemoveBox(Box *mbox)
+{
+	for (auto it = boxes.begin(); it != boxes.end();)
+	{
+		if (*it == mbox) {
+			(*it)->unInit();
+			it = boxes.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+	
+}
+
 Sphere* Scene::AddSphere(glm::vec3 initPos, Material* material)
 {
 	Sphere *s = new Sphere();
@@ -88,6 +103,20 @@ Model* Scene::AddModel(std::string path, glm::vec3 initPos, Material* material)
 	m->SetMaterial(material);
 	models.push_back(m);
 	return models[models.size() - 1];
+}
+
+void Scene::RemoveModel(Model* model)
+{
+	for (auto it = models.begin(); it != models.end();)
+	{
+		if (*it == model) {
+			(*it)->unInit();
+			models.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
 }
 
 Model* Scene::AddModelWithTwoMat(std::string path, glm::vec3 initPos, Material* material1, Material* material2)

@@ -31,6 +31,30 @@ public:
         this->rotAngle = 0;
         this->isInit = false;
     };
+    BaseModel(BaseModel& other) {
+        this->bindMaterial = other.bindMaterial;
+        this->bindMaterial2 = other.bindMaterial2;
+        this->bindMaterial3 = other.bindMaterial3;
+        this->vao = other.vao;
+        this->scale = other.scale;
+        this->pos = other.pos;
+        this->rotBase = other.rotBase;
+        this->rotAngle = other.rotAngle;
+        this->isInit = false;
+    }
+    BaseModel& operator=(BaseModel& other) {
+        this->bindMaterial = other.bindMaterial;
+        this->bindMaterial2 = other.bindMaterial2;
+        this->bindMaterial3 = other.bindMaterial3;
+        this->vao = other.vao;
+        this->scale = other.scale;
+        this->pos = other.pos;
+        this->rotBase = other.rotBase;
+        this->rotAngle = other.rotAngle;
+        this->isInit = false;
+        return *this;
+    }
+
     BaseModel(glm::vec3 pos, float rotAngle, glm::vec3 rotBase): isInit(false), vao(0), scale(glm::vec3(1)), pos(pos), rotAngle(rotAngle), rotBase(rotBase), bindMaterial(nullptr), bindMaterial2(nullptr), bindMaterial3(nullptr) {}
     const glm::vec3 GetPos() const { return pos; };
     const glm::vec3 GetScale() const { return scale; };

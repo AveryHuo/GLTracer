@@ -267,8 +267,8 @@ void Renderer::Draw()
 
 		mat->SetFloat("mixValue", materialValue1);
 
-		cylinder->ChangeScale(glm::vec3(1));
-		cylinder->ChangeRot((float)glfwGetTime() * 25.0f, glm::vec3(0, 1, 0));
+		cylinder->ChangeScale(glm::vec3(0.8));
+		/*cylinder->ChangeRot((float)glfwGetTime() * 25.0f, glm::vec3(0, 1, 0));*/
 		mat->SetMatrix4("model", 1, GL_FALSE, cylinder->GetTransform());
 		cylinder->draw();
 		mat->StopUsing();

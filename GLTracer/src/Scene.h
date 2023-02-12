@@ -70,10 +70,12 @@ public:
 	SpotLight* AddSpotLight(glm::vec3 initPos);
 	PointLight* AddPointLight(glm::vec3 initPos);
 	Box* AddBox(glm::vec3 initPos, Material* material);
+	void RemoveBox(Box* mbox);
 	Sphere* AddSphere(glm::vec3 initPos, Material* material);
 	Cylinder* AddCylinder(glm::vec3 initPos, Material* material);
 	Quad* AddQuad(glm::vec3 initPos, Material* material);
 	Model* AddModel(std::string path, glm::vec3 initPos, Material* material);
+	void RemoveModel(Model *model);
 	Model* Add(std::string path, glm::vec3 initPos, Material* material);
 	Model* AddModelWithTwoMat(std::string path, glm::vec3 initPos, Material* material1, Material* material2);
 	Model* AddModelWithThreeMat(std::string path, glm::vec3 initPos, Material* material1, Material* material2, Material* material3);
